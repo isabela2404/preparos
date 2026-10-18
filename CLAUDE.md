@@ -40,7 +40,9 @@ O trabalho segue as fases da seção 11 do documento, cada uma com um critério 
 
 ## Próximo passo
 
-Fases 1 e 2 prontas; o app está em https://isabela2404.github.io/preparos/ (repositório isabela2404/preparos). A fase 2 só fecha quando a lista conferir com a conta feita à mão. Depois vem a fase 3: Firestore no plano Spark, código do casal (link ou QR code em Ajustes), gravação offline e indicador de estado (RF-30 a RF-34).
+As fases 1, 2 e 3 do roadmap estão prontas e validadas nos dois celulares (18/10/2026). O app está em https://isabela2404.github.io/preparos/ (repositório isabela2404/preparos), sincronizando pelo Firestore.
+
+Agora é a etapa "Depois", na ordem que o uso pedir. Candidatos: cadastro de receitas pela tela (CRUD), busca (RF-03), porções no detalhe (RF-05), modo cozinha (RF-06), itens avulsos (RF-27), origem de cada item (RF-28), gerar código novo do casal, fotos das receitas, restringir a chave do Firebase ao domínio do Pages.
 
 ## Git
 
