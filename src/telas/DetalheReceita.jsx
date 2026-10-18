@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState } from 'preact/hooks';
+import { useState } from 'preact/hooks';
 import { ArrowLeft, ChefHat, ClipboardCheck, Clock, Lightbulb, Pencil, Plus, Snowflake, Users } from 'lucide-preact';
 import { CapaReceita } from '../componentes/CapaReceita.jsx';
 import { ContadorPorcoes } from '../componentes/ContadorPorcoes.jsx';
@@ -13,7 +13,6 @@ import { linkReceita, voltar } from '../rotas.js';
 // como foi escrita, é mais fácil de seguir; por isso ela abre primeiro.
 export function DetalheReceita({ receita, ingredientes, porcoes }) {
   const [porPorcao, setPorPorcao] = useState(false);
-  useLayoutEffect(() => scrollTo(0, 0), [receita?.id]);
 
   if (!receita) {
     return (

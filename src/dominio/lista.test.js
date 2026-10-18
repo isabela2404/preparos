@@ -121,11 +121,12 @@ describe('itens avulsos (RF-27)', () => {
   const avulsos = {
     a1: { nome: 'Papel toalha', setor: 'temperos', marcado: false },
     a2: { nome: 'Pão', setor: 'mercearia', marcado: true },
+    a3: { nome: 'Pilhas', setor: 'outros', marcado: false },
   };
 
   it('entram no setor escolhido, com marcação própria', () => {
     const grupos = agruparLista(itens, {}, avulsos);
-    expect(grupos.map((g) => g.id)).toEqual(['hortifruti', 'mercearia', 'temperos', 'despensa']);
+    expect(grupos.map((g) => g.id)).toEqual(['hortifruti', 'mercearia', 'temperos', 'outros', 'despensa']);
     const temperos = grupos.find((g) => g.id === 'temperos');
     expect(temperos.itens.map((i) => [i.nome, i.avulso, i.marcado])).toEqual([['Papel toalha', true, false]]);
     expect(grupos.find((g) => g.id === 'mercearia').pendentes).toBe(0);
@@ -133,7 +134,12 @@ describe('itens avulsos (RF-27)', () => {
 
   it('vão para o WhatsApp sem quantidade, só os que faltam', () => {
     const texto = textoWhatsApp(agruparLista(itens, { limao: 1, sal: 10 }, avulsos));
-    expect(texto).toBe('*Lista de compras*\n\n*Temperos e Diversos*\n- Papel toalha');
+    expect(texto).toBe('*Lista de compras*\n\n*Temperos e Diversos*\n- Papel toalha\n\n*Outros*\n- Pilhas');
+  });
+
+  it('setor desconhecido vai para Outros', () => {
+    const grupos = agruparLista([], {}, { a1: { nome: 'Vela', setor: 'papelaria', marcado: false } });
+    expect(grupos.map((g) => [g.id, g.itens[0].nome])).toEqual([['outros', 'Vela']]);
   });
 });
 

@@ -99,7 +99,7 @@ Cada requisito tem um código (RF) para facilitar a conversa e os testes. Priori
 | RF-24 | Mostrar progresso por setor e geral (ex.: 7 de 23 itens). | D |
 | RF-25 | Compartilhar a lista pelo WhatsApp como texto, com setores, itens e quantidades; por padrão só os itens não marcados. | M |
 | RF-26 | Botão "Zerar" na lista, com confirmação, igual ao do planejador: apaga receitas, porções e marcações. | M |
-| RF-27 | Permitir adicionar um item avulso à lista (ex.: papel toalha) que não vem de receita. | D |
+| RF-27 | Permitir adicionar um item avulso à lista (ex.: papel toalha) que não vem de receita, num dos setores ou no grupo Outros. | D |
 | RF-28 | Mostrar de quais receitas vem cada item ao tocar nele. | D |
 
 ### 4.4 Sincronização e persistência

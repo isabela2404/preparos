@@ -60,13 +60,17 @@ export const quantidadeAoMarcar = (item) => item.qtdCompra ?? 0;
 
 export const GRUPO_DESPENSA = { id: 'despensa', nome: 'Confira na despensa' };
 
+// Só para itens avulsos que não se encaixam em nenhum setor; ingredientes de
+// receita sempre têm um dos cinco setores (RN-05).
+export const GRUPO_OUTROS = { id: 'outros', nome: 'Outros' };
+
 /**
  * RF-22 e RF-23: agrupa por setor na ordem do mercado, com os básicos (RN-10)
  * num grupo final. Dentro de cada grupo, os marcados vão para o fim.
- * Itens avulsos (RF-27) entram no setor escolhido, sem quantidade.
+ * Itens avulsos (RF-27) entram no setor escolhido, ou em Outros, sem quantidade.
  */
 export function agruparLista(itens, marcados, avulsos = {}) {
-  const grupos = [...SETORES, GRUPO_DESPENSA].map((s) => ({ id: s.id, nome: s.nome, itens: [] }));
+  const grupos = [...SETORES, GRUPO_OUTROS, GRUPO_DESPENSA].map((s) => ({ id: s.id, nome: s.nome, itens: [] }));
   const grupoPorId = Object.fromEntries(grupos.map((g) => [g.id, g]));
 
   for (const item of itens) {
@@ -74,7 +78,7 @@ export function agruparLista(itens, marcados, avulsos = {}) {
     grupo.itens.push({ ...item, marcado: estaMarcado(item, marcados) });
   }
   for (const [id, avulso] of Object.entries(avulsos)) {
-    (grupoPorId[avulso.setor] ?? grupoPorId.temperos).itens.push({
+    (grupoPorId[avulso.setor] ?? grupoPorId.outros).itens.push({
       codigo: `avulso:${id}`,
       id,
       nome: avulso.nome,

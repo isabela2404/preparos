@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'preact/hooks';
+import { useEffect, useLayoutEffect, useMemo, useState } from 'preact/hooks';
 import { BarraInferior } from './componentes/BarraInferior.jsx';
 import { sincronizacaoDisponivel } from './dados/repositorio.js';
 import { useRepositorio } from './dados/useRepositorio.js';
@@ -27,6 +27,12 @@ export function App() {
 
   const caderno = dados?.caderno;
   const estado = dados?.estado;
+
+  // Toda tela abre no topo. O Caderno é a exceção: ele mesmo volta para onde
+  // estava, para quem sai de uma receita não perder o lugar na galeria.
+  useLayoutEffect(() => {
+    if (rota.tela !== 'caderno') scrollTo(0, 0);
+  }, [rota.tela, rota.id]);
 
   useEffect(() => {
     if (!caderno) return;

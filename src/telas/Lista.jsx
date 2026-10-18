@@ -1,9 +1,9 @@
 import { useState } from 'preact/hooks';
-import { Apple, Archive, Check, Drumstick, Milk, Package, Plus, Share2, Sparkles, X } from 'lucide-preact';
+import { Apple, Archive, Check, Drumstick, Milk, Package, Plus, Share2, ShoppingBag, Sparkles, X } from 'lucide-preact';
 import { BotaoZerar } from '../componentes/BotaoZerar.jsx';
 import { TopoTitulo } from '../componentes/TopoTitulo.jsx';
 import { adicionarAvulso, definirMarcacao, marcarAvulso, removerAvulso } from '../dados/repositorio.js';
-import { quantidadeAoMarcar, textoQuantidade, textoWhatsApp } from '../dominio/lista.js';
+import { GRUPO_OUTROS, quantidadeAoMarcar, textoQuantidade, textoWhatsApp } from '../dominio/lista.js';
 import { SETORES } from '../dominio/setores.js';
 
 const ICONE_SETOR = {
@@ -12,6 +12,7 @@ const ICONE_SETOR = {
   mercearia: Package,
   frios: Milk,
   temperos: Sparkles,
+  outros: ShoppingBag,
   despensa: Archive,
 };
 
@@ -124,7 +125,7 @@ export function Lista({ grupos, status }) {
 // RF-27: item que não vem de receita, como papel toalha.
 function NovoAvulso() {
   const [nome, setNome] = useState('');
-  const [setor, setSetor] = useState('temperos');
+  const [setor, setSetor] = useState(GRUPO_OUTROS.id);
   return (
     <form
       class="novo-avulso"
@@ -148,7 +149,7 @@ function NovoAvulso() {
           onInput={(e) => setNome(e.currentTarget.value)}
         />
         <select aria-label="Setor do mercado" value={setor} onChange={(e) => setSetor(e.currentTarget.value)}>
-          {SETORES.map((s) => (
+          {[...SETORES, GRUPO_OUTROS].map((s) => (
             <option key={s.id} value={s.id}>
               {s.nome}
             </option>
