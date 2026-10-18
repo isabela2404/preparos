@@ -1,5 +1,6 @@
 import { useEffect, useLayoutEffect, useMemo, useState } from 'preact/hooks';
 import { BarraInferior } from './componentes/BarraInferior.jsx';
+import { FotosContext } from './componentes/CapaReceita.jsx';
 import { sincronizacaoDisponivel } from './dados/repositorio.js';
 import { useRepositorio } from './dados/useRepositorio.js';
 import { agruparLista, calcularItens } from './dominio/lista.js';
@@ -124,11 +125,11 @@ export function App() {
   }
 
   return (
-    <>
+    <FotosContext.Provider value={dados.fotos}>
       {tela}
       {!TELAS_CHEIAS.has(rota.tela) && (
         <BarraInferior telaAtual={rota.tela} pendentesNaLista={grupos.reduce((soma, g) => soma + g.pendentes, 0)} />
       )}
-    </>
+    </FotosContext.Provider>
   );
 }

@@ -6,9 +6,11 @@
 //   casais/{codigo}                 → { planejador, marcados, avulsos, versaoCarga, criadoEm, substituido? }
 //   casais/{codigo}/receitas/{id}   → receita da carga, com o campo `ordem`
 //   casais/{codigo}/ingredientes/{id}
+//   casais/{codigo}/fotos/{receita}  → { dados (bytes), tipo, atualizadoEm }, reduzida no aparelho
 
 import { initializeApp } from 'firebase/app';
 import {
+  Bytes,
   FieldPath,
   collection,
   connectFirestoreEmulator,
@@ -87,21 +89,33 @@ export async function situacaoDoCasal(codigo) {
 export async function encerrarCasal(codigo) {
   const casal = casalRef(codigo);
   const lote = writeBatch(db);
-  for (const colecao of ['receitas', 'ingredientes']) {
+  for (const colecao of ['receitas', 'ingredientes', 'fotos']) {
     (await getDocsFromServer(collection(casal, colecao))).docs.forEach((d) => lote.delete(d.ref));
   }
   lote.update(casal, { planejador: {}, marcados: {}, avulsos: {}, substituido: true });
   await lote.commit();
 }
 
+/** Copia as fotos para o código novo, em lotes pequenos (cada foto tem até 100 KB). */
+export async function copiarFotos(de, para) {
+  const fotos = (await getDocsFromServer(collection(casalRef(de), 'fotos'))).docs;
+  for (let i = 0; i < fotos.length; i += 20) {
+    const lote = writeBatch(db);
+    fotos.slice(i, i + 20).forEach((d) => lote.set(doc(casalRef(para), 'fotos', d.id), d.data()));
+    await lote.commit();
+  }
+}
+
 /**
  * Passa a ouvir o espaço do casal. Devolve `gravar(mudancas)` e `desconectar()`.
  * Status: 'sincronizado', 'sincronizando', 'offline' ou 'erro'.
  */
-export function conectar(codigo, { aoMudarCaderno, aoMudarEstado, aoMudarStatus }) {
+export function conectar(codigo, { aoMudarCaderno, aoMudarEstado, aoMudarStatus, aoMudarFotos }) {
   const casal = casalRef(codigo);
   let receitas = null;
   let ingredientes = null;
+  // receita → endereço local (blob:) da foto, para as <img> do app.
+  const fotos = new Map();
 
   const falhar = (erro) => {
     console.error('Sincronização:', erro);
@@ -126,6 +140,22 @@ export function conectar(codigo, { aoMudarCaderno, aoMudarEstado, aoMudarStatus 
       (s) => {
         ingredientes = Object.fromEntries(s.docs.map((d) => [d.id, d.data()]));
         emitirCaderno();
+      },
+      falhar,
+    ),
+    onSnapshot(
+      collection(casal, 'fotos'),
+      (s) => {
+        for (const mudanca of s.docChanges()) {
+          const id = mudanca.doc.id;
+          if (fotos.has(id)) URL.revokeObjectURL(fotos.get(id));
+          fotos.delete(id);
+          if (mudanca.type !== 'removed') {
+            const { dados, tipo } = mudanca.doc.data();
+            fotos.set(id, URL.createObjectURL(new Blob([dados.toUint8Array()], { type: tipo })));
+          }
+        }
+        aoMudarFotos(Object.fromEntries(fotos));
       },
       falhar,
     ),
@@ -170,7 +200,17 @@ export function conectar(codigo, { aoMudarCaderno, aoMudarEstado, aoMudarStatus 
       lote.commit().catch(falhar);
     },
     apagarReceita(id) {
-      deleteDoc(doc(casal, 'receitas', id)).catch(falhar);
+      const lote = writeBatch(db);
+      lote.delete(doc(casal, 'receitas', id));
+      lote.delete(doc(casal, 'fotos', id));
+      lote.commit().catch(falhar);
+    },
+    async salvarFoto(receitaId, blob) {
+      const dados = Bytes.fromUint8Array(new Uint8Array(await blob.arrayBuffer()));
+      setDoc(doc(casal, 'fotos', receitaId), { dados, tipo: blob.type, atualizadoEm: serverTimestamp() }).catch(falhar);
+    },
+    removerFoto(receitaId) {
+      deleteDoc(doc(casal, 'fotos', receitaId)).catch(falhar);
     },
     salvarIngrediente(id, ingrediente) {
       setDoc(doc(casal, 'ingredientes', id), ingrediente).catch(falhar);
@@ -180,6 +220,7 @@ export function conectar(codigo, { aoMudarCaderno, aoMudarEstado, aoMudarStatus 
     },
     desconectar() {
       paradas.forEach((parar) => parar());
+      fotos.forEach((url) => URL.revokeObjectURL(url));
     },
   };
 }

@@ -2,6 +2,7 @@
 // no `npm test` comum fica de fora, porque o emulador precisa de Java.
 import { deleteApp, initializeApp } from 'firebase/app';
 import {
+  Bytes,
   collection,
   connectFirestoreEmulator,
   deleteDoc,
@@ -55,6 +56,16 @@ describe.skipIf(!emulador)('regras do Firestore', () => {
     await negado(updateDoc(casal, { outroCampo: 1 }));
     await negado(updateDoc(casal, { planejador: 'texto' }));
     await negado(updateDoc(casal, { avulsos: ['lista'] }));
+  });
+
+  it('aceita foto pequena em bytes e recusa foto grande ou de outro tipo', async () => {
+    const foto = doc(casal, 'fotos', 'arroz');
+    await setDoc(foto, { dados: Bytes.fromUint8Array(new Uint8Array(50 * 1024)), tipo: 'image/jpeg' });
+    expect((await getDoc(foto)).data().dados.toUint8Array().length).toBe(50 * 1024);
+    await negado(setDoc(foto, { dados: Bytes.fromUint8Array(new Uint8Array(300 * 1024)), tipo: 'image/jpeg' }));
+    await negado(setDoc(foto, { dados: Bytes.fromUint8Array(new Uint8Array(10)), tipo: 'image/gif' }));
+    await negado(setDoc(foto, { dados: 'texto', tipo: 'image/jpeg' }));
+    await deleteDoc(foto);
   });
 
   it('lê e grava receitas e ingredientes do casal, e nada além disso', async () => {

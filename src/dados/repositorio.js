@@ -48,9 +48,10 @@ const CHAVE_ESTADO = 'caderno-de-preparos:estado';
 const CHAVE_CODIGO = 'caderno-de-preparos:codigo';
 const ESTADO_VAZIO = { planejador: {}, marcados: {}, avulsos: {} };
 
-/** @type {{ caderno: Caderno, estado: Estado, status: Status, codigo: string | null }} */
+/** @type {{ caderno: Caderno, estado: Estado, status: Status, codigo: string | null, fotos: Record<string, string> }} */
 let atual = {
   caderno: cargaInicial,
+  fotos: {},
   estado: { ...ESTADO_VAZIO, ...ler(CHAVE_ESTADO, true) },
   status: 'local',
   codigo: ler(CHAVE_CODIGO),
@@ -95,7 +96,7 @@ async function conectar() {
   conexao?.desconectar();
   conexao = null;
   if (!atual.codigo || !sincronizacaoDisponivel) {
-    publicar({ status: 'local', caderno: cargaInicial });
+    publicar({ status: 'local', caderno: cargaInicial, fotos: {} });
     return;
   }
   publicar({ status: navigator.onLine ? 'sincronizando' : 'offline' });
@@ -105,6 +106,7 @@ async function conectar() {
     aoMudarCaderno: (dados) => publicar({ caderno: { ...cargaInicial, ...dados } }),
     aoMudarEstado: (estado) => publicar({ estado: { ...ESTADO_VAZIO, ...estado } }),
     aoMudarStatus: (status) => publicar({ status }),
+    aoMudarFotos: (fotos) => publicar({ fotos }),
   });
 }
 
@@ -143,6 +145,7 @@ export async function gerarNovoCodigo() {
   const novo = gerarCodigo();
   const firestore = await import('./firestore.js');
   await firestore.criarCasal(novo, exportarCaderno(), atual.estado);
+  await firestore.copiarFotos(antigo, novo);
   await firestore.encerrarCasal(antigo);
   guardar(CHAVE_CODIGO, novo);
   publicar({ codigo: novo });
@@ -239,6 +242,15 @@ export function salvarReceita(receita, novosIngredientes = {}) {
 export function apagarReceita(id) {
   if (atual.estado.planejador[id] != null) definirPorcoes(id, 0);
   conexao.apagarReceita(id);
+}
+
+/** Foto já reduzida (ver imagem.js). Fica numa coleção própria, fora da receita. */
+export function salvarFoto(receitaId, blob) {
+  return conexao.salvarFoto(receitaId, blob);
+}
+
+export function removerFoto(receitaId) {
+  conexao.removerFoto(receitaId);
 }
 
 export function salvarIngrediente(id, ingrediente) {

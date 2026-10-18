@@ -174,31 +174,31 @@ Medidas caseiras (colher, xícara) entram no catálogo com um fator de conversã
 | --- | --- | --- |
 | RNF-01 | Custo | Nenhum componente com cobrança ou cartão de crédito obrigatório. Hospedagem e sincronização ficam em planos gratuitos que não exigem upgrade para o uso de duas pessoas. |
 | RNF-02 | Disponibilidade | O caderno precisa abrir mesmo se o serviço de sincronização estiver fora do ar ou pausado. |
-| RNF-03 | Offline | Depois do primeiro acesso, o app abre sem internet (service worker com cache do código, receitas e fotos). |
-| RNF-04 | Desempenho | Primeira tela em até 2 s em 4G; a lista recalcula em até 100 ms após mudar uma porção. Fotos otimizadas (WebP, até 100 KB cada). |
+| RNF-03 | Offline | Depois do primeiro acesso, o app abre sem internet (service worker com cache do código; receitas e fotos no cache do Firestore). |
+| RNF-04 | Desempenho | Primeira tela em até 2 s em 4G; a lista recalcula em até 100 ms após mudar uma porção. Fotos reduzidas no aparelho antes de gravar (WebP, ou JPEG no iPhone; até 100 KB cada). |
 | RNF-05 | Responsivo | Projetado primeiro para celular (360 a 430 px de largura), com ajuste para tablet e computador. |
 | RNF-06 | Usabilidade | Alvos de toque de pelo menos 44 px; contraste de texto mínimo 4,5:1; fonte do corpo a partir de 16 px; áreas de toque das caixas de seleção grandes o bastante para uso com uma mão. |
 | RNF-07 | Privacidade | Sem login, mas sem endereço público divulgado. Os dados sincronizados ficam sob um identificador longo e aleatório que só o casal conhece (ver seção 7). Nenhum rastreador, anúncio ou análise de terceiros. |
-| RNF-08 | Manutenção | Receitas e ingredientes no banco, editáveis pela tela do app sem republicá-lo. Um arquivo JSON de carga inicial no repositório popula o banco quando o código do casal é criado; depois disso, Ajustes baixa uma cópia de segurança no mesmo formato. Fotos em uma pasta do repositório. |
+| RNF-08 | Manutenção | Receitas e ingredientes no banco, editáveis pela tela do app sem republicá-lo. Um arquivo JSON de carga inicial no repositório popula o banco quando o código do casal é criado; depois disso, Ajustes baixa uma cópia de segurança no mesmo formato. Fotos enviadas pelo app e guardadas no banco. |
 | RNF-09 | Portabilidade | Sem depender de um único fornecedor: o código é estático e pode ser movido para outra hospedagem gratuita; a sincronização fica atrás de uma camada fina que pode trocar de serviço. |
 | RNF-10 | Compatibilidade | Chrome e Safari recentes no Android e no iPhone; Chrome, Edge e Safari no computador. |
 | RNF-11 | Idioma | Português do Brasil, unidades métricas, vírgula decimal. |
 
 ## 7. Arquitetura e sincronização gratuita
 
-A proposta é um site estático no GitHub Pages para o app e as fotos, mais um banco gratuito na nuvem que guarda as receitas, o planejador e a lista, iguais nos dois aparelhos. Como o GitHub Pages não executa código de servidor, ele sozinho não consegue sincronizar nada; é a peça de banco que resolve o requisito de sincronização.
+A proposta é um site estático no GitHub Pages para o app, mais um banco gratuito na nuvem que guarda as receitas, as fotos, o planejador e a lista, iguais nos dois aparelhos. Como o GitHub Pages não executa código de servidor, ele sozinho não consegue sincronizar nada; é a peça de banco que resolve o requisito de sincronização.
 
 **O app vem do GitHub Pages; receitas e lista vivem no Firestore**
 
 ```mermaid
 flowchart TB
-    pages["<b>GitHub Pages</b><br/>App e fotos das receitas<br/>Somente leitura, sem dados pessoais"]
+    pages["<b>GitHub Pages</b><br/>Código do app<br/>Somente leitura, sem dados pessoais"]
     pessoaA["<b>Celular da Pessoa A</b><br/>PWA instalado<br/>Funciona offline"]
     pessoaB["<b>Celular da Pessoa B</b><br/>PWA instalado<br/>Funciona offline"]
-    fs["<b>Firebase Firestore (plano Spark)</b><br/>Receitas, planejador e lista de compras<br/>Acesso só com a chave do casal"]
+    fs["<b>Firebase Firestore (plano Spark)</b><br/>Receitas, fotos, planejador e lista<br/>Acesso só com a chave do casal"]
 
-    pages -- "app e fotos" --> pessoaA
-    pages -- "app e fotos" --> pessoaB
+    pages -- "app" --> pessoaA
+    pages -- "app" --> pessoaB
     pessoaA <-- "tempo real" --> fs
     pessoaB <-- "tempo real" --> fs
 
@@ -207,7 +207,7 @@ flowchart TB
 
 *arquitetura · 2 celulares, 1 hospedagem, 1 banco*
 
-Os dois celulares baixam o app e as fotos do GitHub Pages e leem e gravam receitas, planejador e lista no Firestore.
+Os dois celulares baixam o app do GitHub Pages e leem e gravam receitas, fotos, planejador e lista no Firestore.
 
 **Hospedagem do app.** GitHub Pages. Atenção: em conta gratuita, o Pages publica a partir de repositório público. Isso torna o código visível por quem souber o endereço, o que não tem problema, mas obriga a **nunca** colocar chaves ou senhas no repositório.
 
@@ -276,6 +276,8 @@ Todos os dados moram no banco, dentro do espaço do casal: o catálogo de ingred
 }
 ```
 
+**Fotos (`coleção fotos`, uma por receita, com o código da receita)** – a imagem reduzida no aparelho, em bytes, com o tipo (`image/webp` ou `image/jpeg`). As regras do banco recusam arquivos acima de 200 KB.
+
 **Estado sincronizado (banco, um documento por casal)** – `planejador` guarda receita → porções; `marcados` guarda ingrediente → quantidade na lista quando foi marcado (RN-07); `avulsos` guarda os itens que não vêm de receita (RF-27), num mapa para que cada toque grave só o item alterado.
 
 ```json
@@ -321,7 +323,7 @@ O app reaproveita a paleta da página visual e da apresentação já criadas: um
 - Barra inferior fixa com Caderno, Planejador e Lista, mais selo com o número de itens pendentes na Lista.
 - Botões de ação: Zerar, com confirmação, no Planejador e na Lista; Compartilhar no WhatsApp (verde próprio do WhatsApp apenas nesse botão).
 
-**Fotos.** Na versão 1, cada card mostra o ícone da categoria sobre um fundo na cor dela. As fotos entram depois, uma a uma, em WebP de até 100 KB, numa pasta do repositório; a receita aponta para o arquivo no campo foto. As fotos não vão para o banco, porque o armazenamento de arquivos do Firebase pode exigir plano pago (conferir ao criar o projeto).
+**Fotos.** Sem foto, o card mostra o ícone da categoria sobre um fundo na cor dela. A foto é escolhida no formulário da receita (câmera ou galeria), reduzida no próprio aparelho para até 100 KB e gravada no Firestore, numa coleção separada das receitas, para os dois celulares verem e para funcionar offline. Não usa o Firebase Storage, que hoje exige o plano pago, nem a pasta do repositório, que exigiria uma senha de escrita do GitHub dentro do app público (decisão de 18/10/2026).
 
 **Interatividade esperada.** Animações curtas ao adicionar uma receita, ao mudar o contador e ao marcar um item; filtro e busca que respondem enquanto se digita; resumo fixo com totais que se atualiza na hora.
 
@@ -334,7 +336,7 @@ Os cinco pontos em aberto foram decididos em 18/10/2026; a tabela registra a dec
 | 1 | Categoria Café da manhã | Vira parte de Lanches Rápidos | Ficam seis categorias; as receitas de café da manhã entram em Lanches |
 | 2 | Conta Google para o Firebase | Usar a conta Gmail da Pessoa A | É o único cadastro; sem cartão no plano Spark |
 | 3 | Repositório público | Aceito, sem divulgação | Nome discreto; nenhuma chave no código |
-| 4 | Fotos | Começar com ícones por categoria e adicionar fotos depois | Campo foto fica vazio no início; fotos entram numa pasta do repositório |
+| 4 | Fotos | Começar com ícones por categoria e adicionar fotos depois | Fotos enviadas pelo app e guardadas no Firestore, reduzidas no aparelho (revisto em 18/10/2026; antes previstas numa pasta do repositório) |
 | 5 | Onde ficam as receitas | No banco, não no código | Editar receitas não exige republicar o app e facilita o cadastro pela tela (CRUD) no futuro |
 
 **Riscos técnicos**
@@ -374,4 +376,4 @@ flowchart LR
 
 Os desejáveis marcados com D na seção 4 entram na etapa Depois, na ordem que o uso pedir. Cadastro de receitas pela tela (CRUD) pode ser a primeira evolução.
 
-**Andamento.** As fases 1 a 3 foram validadas nos dois celulares em 18/10/2026. Da etapa Depois já entraram o cadastro de receitas e ingredientes pela tela, a busca (RF-03), as porções no detalhe (RF-05, também no modo cozinha), o modo cozinha (RF-06), os itens avulsos (RF-27), a origem de cada item (RF-28) e a troca do código do casal. Com o cadastro pela tela, o banco passou a ser a fonte das receitas: a carga inicial só é usada na criação do código do casal.
+**Andamento.** As fases 1 a 3 foram validadas nos dois celulares em 18/10/2026. Da etapa Depois já entraram o cadastro de receitas e ingredientes pela tela, a busca (RF-03), as porções no detalhe (RF-05, também no modo cozinha), o modo cozinha (RF-06), os itens avulsos (RF-27), a origem de cada item (RF-28) a troca do código do casal e as fotos das receitas enviadas pelo app. Com o cadastro pela tela, o banco passou a ser a fonte das receitas: a carga inicial só é usada na criação do código do casal.

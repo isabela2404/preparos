@@ -1,8 +1,10 @@
-import { useRef, useState } from 'preact/hooks';
-import { Plus, Trash2, X } from 'lucide-preact';
+import { useEffect, useRef, useState } from 'preact/hooks';
+import { Camera, Plus, Trash2, X } from 'lucide-preact';
+import { CapaReceita, useFoto } from '../componentes/CapaReceita.jsx';
 import { Confirmacao } from '../componentes/Confirmacao.jsx';
 import { SeletorIngrediente } from '../componentes/SeletorIngrediente.jsx';
-import { apagarReceita, salvarReceita } from '../dados/repositorio.js';
+import { apagarReceita, removerFoto, salvarFoto, salvarReceita } from '../dados/repositorio.js';
+import { reduzirImagem } from '../dados/imagem.js';
 import { CATEGORIAS } from '../dominio/categorias.js';
 import {
   NOME_MEDIDA,
@@ -22,7 +24,13 @@ export function EditarReceita({ receita, caderno, podeEditar }) {
   const [erros, setErros] = useState([]);
   const [escolhendo, setEscolhendo] = useState(null);
   const [apagando, setApagando] = useState(false);
+  // Foto: { blob, url } escolhida agora, ou 'remover'; null mantém a atual.
+  const [foto, setFoto] = useState(null);
+  const [estadoFoto, setEstadoFoto] = useState(null);
+  const fotoAtual = useFoto(receita ?? { id: '', foto: null });
   const topo = useRef(null);
+
+  useEffect(() => () => foto?.url && URL.revokeObjectURL(foto.url), [foto]);
 
   const titulo = receita ? 'Editar receita' : 'Nova receita';
   const catalogo = { ...caderno.ingredientes, ...novos };
@@ -70,6 +78,8 @@ export function EditarReceita({ receita, caderno, podeEditar }) {
     }
     const usados = new Set(pronta.ingredientes.map((i) => i.ingrediente));
     salvarReceita(pronta, Object.fromEntries(Object.entries(novos).filter(([id]) => usados.has(id))));
+    if (foto === 'remover') removerFoto(pronta.id);
+    else if (foto) salvarFoto(pronta.id, foto.blob);
     if (receita) voltar();
     else location.replace(linkReceita(pronta.id));
   }
@@ -113,6 +123,52 @@ export function EditarReceita({ receita, caderno, podeEditar }) {
             ))}
           </div>
         </fieldset>
+
+        <div class="campo">
+          <span>Foto</span>
+          <CapaReceita
+            class="editor-foto"
+            receita={{ id: receita?.id ?? '', categoria: form.categoria }}
+            foto={foto === 'remover' ? null : (foto?.url ?? fotoAtual ?? null)}
+          />
+          <div class="ajustes-acoes">
+            <label class="botao botao-secundario">
+              <Camera size={20} aria-hidden="true" />
+              {foto?.url || (fotoAtual && foto !== 'remover') ? 'Trocar foto' : 'Escolher foto'}
+              <input
+                type="file"
+                accept="image/*"
+                class="so-leitor"
+                onChange={async (e) => {
+                  const arquivo = e.currentTarget.files[0];
+                  e.currentTarget.value = '';
+                  if (!arquivo) return;
+                  setEstadoFoto('Reduzindo a foto…');
+                  try {
+                    const blob = await reduzirImagem(arquivo);
+                    setFoto({ blob, url: URL.createObjectURL(blob) });
+                    setEstadoFoto(`Foto pronta (${Math.ceil(blob.size / 1024)} KB). Ela é gravada ao salvar.`);
+                  } catch (erro) {
+                    setEstadoFoto(erro.message);
+                  }
+                }}
+              />
+            </label>
+            {(foto?.url || (fotoAtual && foto !== 'remover')) && (
+              <button
+                type="button"
+                class="botao botao-perigo-texto"
+                onClick={() => {
+                  setFoto('remover');
+                  setEstadoFoto('A foto sai ao salvar.');
+                }}
+              >
+                Remover foto
+              </button>
+            )}
+          </div>
+          {estadoFoto && <small role="status">{estadoFoto}</small>}
+        </div>
 
         <div class="campos-lado">
           <label class="campo">

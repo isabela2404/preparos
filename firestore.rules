@@ -23,6 +23,16 @@ service cloud.firestore {
       match /{colecao}/{id} {
         allow read, write: if codigoValido(codigo) && colecao in ['receitas', 'ingredientes'];
       }
+
+      // Fotos reduzidas no aparelho (até 100 KB); o limite aqui deixa folga.
+      match /fotos/{receita} {
+        allow read, delete: if codigoValido(codigo);
+        allow create, update: if codigoValido(codigo)
+          && request.resource.data.keys().hasOnly(['dados', 'tipo', 'atualizadoEm'])
+          && request.resource.data.dados is bytes
+          && request.resource.data.dados.size() <= 200 * 1024
+          && request.resource.data.tipo in ['image/webp', 'image/jpeg'];
+      }
     }
   }
 }

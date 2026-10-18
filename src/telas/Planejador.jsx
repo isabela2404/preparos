@@ -1,5 +1,5 @@
 import { Check, Plus } from 'lucide-preact';
-import { IconeCategoria } from '../componentes/CapaReceita.jsx';
+import { IconeCategoria, useFoto } from '../componentes/CapaReceita.jsx';
 import { ChipsCategoria } from '../componentes/ChipsCategoria.jsx';
 import { BotaoZerar } from '../componentes/BotaoZerar.jsx';
 import { CampoBusca } from '../componentes/CampoBusca.jsx';
@@ -42,13 +42,7 @@ export function Planejador({ caderno, planejador, status, categoria, aoMudarCate
                   aria-pressed={escolhida}
                   onClick={() => definirPorcoes(r.id, escolhida ? 0 : r.porcoesPadrao)}
                 >
-                  <span class="linha-plano-icone">
-                    {escolhida ? (
-                      <Check size={22} aria-hidden="true" />
-                    ) : (
-                      <IconeCategoria categoria={r.categoria} size={22} />
-                    )}
-                  </span>
+                  <IconePlano receita={r} escolhida={escolhida} />
                   <span class="linha-plano-texto">
                     <strong>{r.nome}</strong>
                     <small>1 porção = {r.descricaoPorcao}</small>
@@ -72,5 +66,21 @@ export function Planejador({ caderno, planejador, status, categoria, aoMudarCate
         </div>
       </div>
     </>
+  );
+}
+
+// Miniatura da foto, ou o ícone da categoria; um visto quando está escolhida.
+function IconePlano({ receita, escolhida }) {
+  const foto = useFoto(receita);
+  return (
+    <span class={foto && !escolhida ? 'linha-plano-icone com-foto' : 'linha-plano-icone'}>
+      {escolhida ? (
+        <Check size={22} aria-hidden="true" />
+      ) : foto ? (
+        <img src={foto} alt="" loading="lazy" decoding="async" />
+      ) : (
+        <IconeCategoria categoria={receita.categoria} size={22} />
+      )}
+    </span>
   );
 }
