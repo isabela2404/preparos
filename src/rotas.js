@@ -4,11 +4,17 @@ import { useEffect, useState } from 'preact/hooks';
 // não sabe redirecionar caminhos desconhecidos para ele.
 
 export function interpretarRota(hash) {
-  const [tela, id] = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
-  if (tela === 'receita' && id) return { tela: 'receita', id: decodeURIComponent(id) };
+  const [tela, id, acao] = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  if (tela === 'receita' && id) {
+    const rota = { tela: 'receita', id: decodeURIComponent(id) };
+    if (acao === 'editar') return { ...rota, tela: 'editar' };
+    if (acao === 'cozinha') return { ...rota, tela: 'cozinha' };
+    return rota;
+  }
+  if (tela === 'nova-receita') return { tela: 'editar', id: null };
   // Link de convite que o outro celular manda: #/entrar/<código do casal>.
   if (tela === 'entrar' && id) return { tela: 'ajustes', convite: id };
-  if (tela === 'planejador' || tela === 'lista' || tela === 'ajustes') return { tela };
+  if (['planejador', 'lista', 'ajustes', 'ingredientes'].includes(tela)) return { tela };
   return { tela: 'caderno' };
 }
 

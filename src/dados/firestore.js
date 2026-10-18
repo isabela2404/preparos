@@ -3,7 +3,7 @@
 // então quem usa o app sem sincronizar não baixa o SDK.
 //
 // Estrutura no banco:
-//   casais/{codigo}                 → { planejador, marcados, versaoCarga, criadoEm }
+//   casais/{codigo}                 → { planejador, marcados, avulsos, versaoCarga, criadoEm }
 //   casais/{codigo}/receitas/{id}   → receita da carga, com o campo `ordem`
 //   casais/{codigo}/ingredientes/{id}
 
@@ -12,15 +12,16 @@ import {
   FieldPath,
   collection,
   connectFirestoreEmulator,
+  deleteDoc,
   deleteField,
   doc,
   getDocFromServer,
-  getDocs,
   initializeFirestore,
   onSnapshot,
   persistentLocalCache,
   persistentMultipleTabManager,
   serverTimestamp,
+  setDoc,
   updateDoc,
   writeBatch,
 } from 'firebase/firestore';
@@ -34,6 +35,7 @@ const app = initializeApp({
 // Cache no aparelho: o app abre offline e as gravações sobem quando a conexão volta (RF-32).
 const db = initializeFirestore(app, {
   localCache: persistentLocalCache({ tabManager: persistentMultipleTabManager() }),
+  ignoreUndefinedProperties: true,
 });
 
 if (import.meta.env.VITE_FIRESTORE_EMULADOR) {
@@ -50,7 +52,11 @@ function escreverCarga(lote, casal, carga) {
   }
 }
 
-/** Cria o espaço do casal com a carga inicial e o estado que já estava no aparelho. */
+/**
+ * Cria o espaço do casal com a carga inicial e o estado que já estava no
+ * aparelho. Depois disso, as receitas são editadas pela tela e o banco passa
+ * a ser a fonte delas; a carga do repositório não é regravada.
+ */
 export async function criarCasal(codigo, carga, estado) {
   const casal = casalRef(codigo);
   const lote = writeBatch(db);
@@ -58,6 +64,7 @@ export async function criarCasal(codigo, carga, estado) {
   lote.set(casal, {
     planejador: estado.planejador,
     marcados: estado.marcados,
+    avulsos: estado.avulsos ?? {},
     versaoCarga: carga.versao,
     criadoEm: serverTimestamp(),
   });
@@ -69,32 +76,13 @@ export async function casalExiste(codigo) {
 }
 
 /**
- * Quando a carga do repositório ganha uma versão nova, regrava receitas e
- * ingredientes no banco e apaga os que saíram dela.
- */
-async function atualizarCarga(casal, carga) {
-  const lote = writeBatch(db);
-  for (const [colecao, ids] of [
-    ['receitas', new Set(carga.receitas.map((r) => r.id))],
-    ['ingredientes', new Set(Object.keys(carga.ingredientes))],
-  ]) {
-    const existentes = await getDocs(collection(casal, colecao));
-    existentes.docs.filter((d) => !ids.has(d.id)).forEach((d) => lote.delete(d.ref));
-  }
-  escreverCarga(lote, casal, carga);
-  lote.update(casal, { versaoCarga: carga.versao });
-  await lote.commit();
-}
-
-/**
  * Passa a ouvir o espaço do casal. Devolve `gravar(mudancas)` e `desconectar()`.
  * Status: 'sincronizado', 'sincronizando', 'offline' ou 'erro'.
  */
-export function conectar(codigo, carga, { aoMudarCaderno, aoMudarEstado, aoMudarStatus }) {
+export function conectar(codigo, { aoMudarCaderno, aoMudarEstado, aoMudarStatus }) {
   const casal = casalRef(codigo);
   let receitas = null;
   let ingredientes = null;
-  let cargaConferida = false;
 
   const falhar = (erro) => {
     console.error('Sincronização:', erro);
@@ -132,11 +120,7 @@ export function conectar(codigo, carga, { aoMudarCaderno, aoMudarEstado, aoMudar
           return;
         }
         const dados = s.data();
-        aoMudarEstado({ planejador: dados.planejador ?? {}, marcados: dados.marcados ?? {} });
-        if (!fromCache && !cargaConferida) {
-          cargaConferida = true;
-          if ((dados.versaoCarga ?? 0) < carga.versao) atualizarCarga(casal, carga).catch(falhar);
-        }
+        aoMudarEstado({ planejador: dados.planejador ?? {}, marcados: dados.marcados ?? {}, avulsos: dados.avulsos ?? {} });
         if (!navigator.onLine) aoMudarStatus('offline');
         else aoMudarStatus(hasPendingWrites || fromCache ? 'sincronizando' : 'sincronizado');
       },
@@ -152,6 +136,23 @@ export function conectar(codigo, carga, { aoMudarCaderno, aoMudarEstado, aoMudar
       ]);
       // Sem await: offline, a promessa só resolve quando a conexão volta.
       updateDoc(casal, campo, valor, ...resto).catch(falhar);
+    },
+    // Cadastro pela tela. Sem await, pelo mesmo motivo: offline a gravação fica
+    // na fila, e o cache local já mostra a mudança na hora.
+    salvarReceita(receita, novosIngredientes) {
+      const lote = writeBatch(db);
+      lote.set(doc(casal, 'receitas', receita.id), receita);
+      for (const [id, ing] of Object.entries(novosIngredientes)) lote.set(doc(casal, 'ingredientes', id), ing);
+      lote.commit().catch(falhar);
+    },
+    apagarReceita(id) {
+      deleteDoc(doc(casal, 'receitas', id)).catch(falhar);
+    },
+    salvarIngrediente(id, ingrediente) {
+      setDoc(doc(casal, 'ingredientes', id), ingrediente).catch(falhar);
+    },
+    apagarIngrediente(id) {
+      deleteDoc(doc(casal, 'ingredientes', id)).catch(falhar);
     },
     desconectar() {
       paradas.forEach((parar) => parar());

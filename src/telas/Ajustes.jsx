@@ -1,8 +1,8 @@
 import { useMemo, useState } from 'preact/hooks';
-import { ArrowLeft, Copy, Share2, Smartphone, Users } from 'lucide-preact';
+import { ArrowLeft, Copy, Download, List, Share2, Smartphone, Users } from 'lucide-preact';
 import { renderSVG } from 'uqr';
 import { STATUS } from '../componentes/TopoTitulo.jsx';
-import { criarCasal, entrarNoCasal, sincronizacaoDisponivel } from '../dados/repositorio.js';
+import { criarCasal, entrarNoCasal, exportarCaderno, sincronizacaoDisponivel } from '../dados/repositorio.js';
 import { voltar } from '../rotas.js';
 
 const linkDoConvite = (codigo) => `${location.origin}${location.pathname}#/entrar/${codigo}`;
@@ -126,6 +126,19 @@ export function Ajustes({ codigo, status, convite }) {
           </details>
         </>
       )}
+
+      <section class="cartao">
+        <h2>Receitas</h2>
+        <div class="ajustes-acoes">
+          <a class="botao botao-secundario" href="#/ingredientes">
+            <List size={20} aria-hidden="true" /> Ingredientes
+          </a>
+          <button type="button" class="botao botao-secundario" onClick={baixarCopia}>
+            <Download size={20} aria-hidden="true" /> Baixar cópia
+          </button>
+        </div>
+        <p class="nota">A cópia traz todas as receitas e ingredientes, no formato da carga inicial do app.</p>
+      </section>
     </main>
   );
 }
@@ -171,4 +184,14 @@ function CodigoDoCasal({ codigo }) {
       <p class="nota">Quem tiver este código vê e altera o caderno. Mande só para o outro celular.</p>
     </section>
   );
+}
+
+// Cópia de segurança das receitas (RNF-08).
+function baixarCopia() {
+  const arquivo = new Blob([JSON.stringify(exportarCaderno(), null, 2)], { type: 'application/json' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(arquivo);
+  link.download = `caderno-de-preparos-${new Date().toISOString().slice(0, 10)}.json`;
+  link.click();
+  setTimeout(() => URL.revokeObjectURL(link.href), 1000);
 }

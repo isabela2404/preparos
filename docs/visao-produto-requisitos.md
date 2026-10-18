@@ -56,7 +56,7 @@ A versão 1 entrega três módulos (Caderno, Planejador, Lista de Compras) mais 
 | Sincronização do planejador e da lista entre dois aparelhos | Sim |  |
 | PWA instalável com uso offline do caderno | Sim |  |
 | Receitas guardadas no banco, carregadas na primeira vez por um arquivo inicial | Sim |  |
-| Criar, editar e excluir receitas pela interface (CRUD) |  | Sim |
+| Criar, editar e excluir receitas pela interface (CRUD) |  | Sim (entregue) |
 | Histórico de compras ou de cardápios | Não previsto |  |
 | Login, contas, divulgação pública | Não previsto |  |
 | Agenda, calendário, horários de refeição | Não previsto |  |
@@ -179,7 +179,7 @@ Medidas caseiras (colher, xícara) entram no catálogo com um fator de conversã
 | RNF-05 | Responsivo | Projetado primeiro para celular (360 a 430 px de largura), com ajuste para tablet e computador. |
 | RNF-06 | Usabilidade | Alvos de toque de pelo menos 44 px; contraste de texto mínimo 4,5:1; fonte do corpo a partir de 16 px; áreas de toque das caixas de seleção grandes o bastante para uso com uma mão. |
 | RNF-07 | Privacidade | Sem login, mas sem endereço público divulgado. Os dados sincronizados ficam sob um identificador longo e aleatório que só o casal conhece (ver seção 7). Nenhum rastreador, anúncio ou análise de terceiros. |
-| RNF-08 | Manutenção | Receitas e ingredientes no banco, editáveis sem republicar o app; um arquivo JSON de carga inicial no repositório serve de ponto de partida e de cópia de segurança. Fotos em uma pasta do repositório. |
+| RNF-08 | Manutenção | Receitas e ingredientes no banco, editáveis pela tela do app sem republicá-lo. Um arquivo JSON de carga inicial no repositório popula o banco quando o código do casal é criado; depois disso, Ajustes baixa uma cópia de segurança no mesmo formato. Fotos em uma pasta do repositório. |
 | RNF-09 | Portabilidade | Sem depender de um único fornecedor: o código é estático e pode ser movido para outra hospedagem gratuita; a sincronização fica atrás de uma camada fina que pode trocar de serviço. |
 | RNF-10 | Compatibilidade | Chrome e Safari recentes no Android e no iPhone; Chrome, Edge e Safari no computador. |
 | RNF-11 | Idioma | Português do Brasil, unidades métricas, vírgula decimal. |
@@ -275,13 +275,13 @@ Todos os dados moram no banco, dentro do espaço do casal: o catálogo de ingred
 }
 ```
 
-**Estado sincronizado (banco, um documento por casal)** – `planejador` guarda receita → porções; `marcados` guarda ingrediente → quantidade na lista quando foi marcado (RN-07).
+**Estado sincronizado (banco, um documento por casal)** – `planejador` guarda receita → porções; `marcados` guarda ingrediente → quantidade na lista quando foi marcado (RN-07); `avulsos` guarda os itens que não vêm de receita (RF-27), num mapa para que cada toque grave só o item alterado.
 
 ```json
 {
   "planejador": { "almondegas-assadas": 8, "arroz-integral": 6 },
   "marcados":   { "carne-moida": 1065 },
-  "avulsos":    [ { "id": "a1", "nome": "Papel toalha", "setor": "temperos", "marcado": false } ]
+  "avulsos":    { "a1": { "nome": "Papel toalha", "setor": "temperos", "marcado": false } }
 }
 ```
 
@@ -372,3 +372,5 @@ flowchart LR
 *roadmap · 3 fases com critério de pronto e uma etapa de evolução*
 
 Os desejáveis marcados com D na seção 4 entram na etapa Depois, na ordem que o uso pedir. Cadastro de receitas pela tela (CRUD) pode ser a primeira evolução.
+
+**Andamento.** As fases 1 a 3 foram validadas nos dois celulares em 18/10/2026. Da etapa Depois já entraram o cadastro de receitas e ingredientes pela tela, a busca (RF-03), o modo cozinha (RF-06) e os itens avulsos (RF-27). Com o cadastro pela tela, o banco passou a ser a fonte das receitas: a carga inicial só é usada na criação do código do casal.

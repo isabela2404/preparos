@@ -1,8 +1,10 @@
-import { Apple, Archive, Check, ClipboardList, Drumstick, Milk, Package, Share2, Sparkles } from 'lucide-preact';
+import { useState } from 'preact/hooks';
+import { Apple, Archive, Check, Drumstick, Milk, Package, Plus, Share2, Sparkles, X } from 'lucide-preact';
 import { BotaoZerar } from '../componentes/BotaoZerar.jsx';
 import { TopoTitulo } from '../componentes/TopoTitulo.jsx';
-import { definirMarcacao } from '../dados/repositorio.js';
+import { adicionarAvulso, definirMarcacao, marcarAvulso, removerAvulso } from '../dados/repositorio.js';
 import { quantidadeAoMarcar, textoQuantidade, textoWhatsApp } from '../dominio/lista.js';
+import { SETORES } from '../dominio/setores.js';
 
 const ICONE_SETOR = {
   acougue: Drumstick,
@@ -13,21 +15,8 @@ const ICONE_SETOR = {
   despensa: Archive,
 };
 
-// RF-20 a RF-26.
+// RF-20 a RF-27.
 export function Lista({ grupos, status }) {
-  if (!grupos.length) {
-    return (
-      <main class="conteudo vazio">
-        <ClipboardList size={48} strokeWidth={1.5} aria-hidden="true" />
-        <h1 class="topo-titulo">Lista vazia</h1>
-        <p>A lista sai das receitas escolhidas no Planejador.</p>
-        <a class="botao" href="#/planejador">
-          Ir para o Planejador
-        </a>
-      </main>
-    );
-  }
-
   const total = grupos.reduce((soma, g) => soma + g.itens.length, 0);
   const pendentes = grupos.reduce((soma, g) => soma + g.pendentes, 0);
   const feitos = total - pendentes;
@@ -36,17 +25,34 @@ export function Lista({ grupos, status }) {
     <>
       <header class="topo">
         <TopoTitulo titulo="Lista de compras" status={status} />
-        <div class="progresso">
-          <span>
-            {feitos} de {total} itens
-          </span>
-          <div class="progresso-barra" role="progressbar" aria-valuemin={0} aria-valuemax={total} aria-valuenow={feitos}>
-            <div style={{ width: `${(feitos / total) * 100}%` }} />
+        {total > 0 && (
+          <div class="progresso">
+            <span>
+              {feitos} de {total} itens
+            </span>
+            <div
+              class="progresso-barra"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={total}
+              aria-valuenow={feitos}
+            >
+              <div style={{ width: `${(feitos / total) * 100}%` }} />
+            </div>
           </div>
-        </div>
+        )}
       </header>
 
-      <main class="conteudo com-resumo">
+      <main class={total ? 'conteudo com-resumo' : 'conteudo'}>
+        {!total && (
+          <div class="lista-vazia">
+            <p>A lista sai das receitas escolhidas no Planejador. Também dá para anotar aqui o que não vem de receita.</p>
+            <a class="botao botao-secundario" href="#/planejador">
+              Ir para o Planejador
+            </a>
+          </div>
+        )}
+
         {grupos.map((grupo) => {
           const Icone = ICONE_SETOR[grupo.id];
           return (
@@ -58,13 +64,17 @@ export function Lista({ grupos, status }) {
               </h2>
               <ul class="itens">
                 {grupo.itens.map((item) => (
-                  <li key={item.codigo}>
+                  <li key={item.codigo} class="item-linha">
                     <label class={item.marcado ? 'item marcado' : 'item'}>
                       <input
                         type="checkbox"
                         class="so-leitor"
                         checked={item.marcado}
-                        onChange={() => definirMarcacao(item.codigo, item.marcado ? null : quantidadeAoMarcar(item))}
+                        onChange={() =>
+                          item.avulso
+                            ? marcarAvulso(item.id, !item.marcado)
+                            : definirMarcacao(item.codigo, item.marcado ? null : quantidadeAoMarcar(item))
+                        }
                       />
                       <span class="caixa" aria-hidden="true">
                         <Check size={20} strokeWidth={3} />
@@ -72,28 +82,82 @@ export function Lista({ grupos, status }) {
                       <span class="item-nome">{item.nome}</span>
                       <span class="item-qtd">{textoQuantidade(item)}</span>
                     </label>
+                    {item.avulso && (
+                      <button
+                        type="button"
+                        class="item-remover"
+                        aria-label={`Tirar ${item.nome} da lista`}
+                        onClick={() => removerAvulso(item.id)}
+                      >
+                        <X size={20} aria-hidden="true" />
+                      </button>
+                    )}
                   </li>
                 ))}
               </ul>
             </section>
           );
         })}
+
+        <NovoAvulso />
       </main>
 
-      <div class="resumo">
-        <div class="resumo-acoes">
-          <BotaoZerar />
-          <a
-            class={pendentes ? 'botao botao-whatsapp' : 'botao botao-whatsapp desabilitado'}
-            href={`https://wa.me/?text=${encodeURIComponent(textoWhatsApp(grupos))}`}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Share2 size={20} aria-hidden="true" /> WhatsApp
-          </a>
+      {total > 0 && (
+        <div class="resumo">
+          <div class="resumo-acoes">
+            <BotaoZerar />
+            <a
+              class={pendentes ? 'botao botao-whatsapp' : 'botao botao-whatsapp desabilitado'}
+              href={`https://wa.me/?text=${encodeURIComponent(textoWhatsApp(grupos))}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Share2 size={20} aria-hidden="true" /> WhatsApp
+            </a>
+          </div>
         </div>
-      </div>
-
+      )}
     </>
+  );
+}
+
+// RF-27: item que não vem de receita, como papel toalha.
+function NovoAvulso() {
+  const [nome, setNome] = useState('');
+  const [setor, setSetor] = useState('temperos');
+  return (
+    <form
+      class="novo-avulso"
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (!nome.trim()) return;
+        adicionarAvulso(nome, setor);
+        setNome('');
+      }}
+    >
+      <label for="avulso-nome" class="novo-avulso-titulo">
+        Adicionar à lista
+      </label>
+      <div class="novo-avulso-campos">
+        <input
+          id="avulso-nome"
+          type="text"
+          placeholder="Ex.: papel toalha"
+          enterkeyhint="done"
+          value={nome}
+          onInput={(e) => setNome(e.currentTarget.value)}
+        />
+        <select aria-label="Setor do mercado" value={setor} onChange={(e) => setSetor(e.currentTarget.value)}>
+          {SETORES.map((s) => (
+            <option key={s.id} value={s.id}>
+              {s.nome}
+            </option>
+          ))}
+        </select>
+        <button type="submit" class="botao" disabled={!nome.trim()} aria-label="Adicionar item">
+          <Plus size={22} aria-hidden="true" />
+        </button>
+      </div>
+    </form>
   );
 }

@@ -2,13 +2,16 @@ import { Check, Plus } from 'lucide-preact';
 import { IconeCategoria } from '../componentes/CapaReceita.jsx';
 import { ChipsCategoria } from '../componentes/ChipsCategoria.jsx';
 import { BotaoZerar } from '../componentes/BotaoZerar.jsx';
+import { CampoBusca } from '../componentes/CampoBusca.jsx';
 import { ContadorPorcoes } from '../componentes/ContadorPorcoes.jsx';
 import { TopoTitulo } from '../componentes/TopoTitulo.jsx';
 import { definirPorcoes } from '../dados/repositorio.js';
+import { filtrarPorBusca } from '../dominio/busca.js';
 import { CATEGORIA_POR_ID, filtrarPorCategoria } from '../dominio/categorias.js';
 
 // RF-10 a RF-14. A lista se recalcula sozinha (RF-15), então não há botão de gerar.
-export function Planejador({ receitas, planejador, status, categoria, aoMudarCategoria }) {
+export function Planejador({ caderno, planejador, status, categoria, aoMudarCategoria, busca, aoMudarBusca }) {
+  const { receitas } = caderno;
   const escolhidas = receitas.filter((r) => planejador[r.id] != null);
   const totalPorcoes = escolhidas.reduce((soma, r) => soma + planejador[r.id], 0);
 
@@ -16,12 +19,15 @@ export function Planejador({ receitas, planejador, status, categoria, aoMudarCat
     <>
       <header class="topo">
         <TopoTitulo titulo="Planejador" status={status} />
+        <div class="topo-busca">
+          <CampoBusca valor={busca} aoMudar={aoMudarBusca} />
+        </div>
         <ChipsCategoria selecionada={categoria} aoSelecionar={aoMudarCategoria} />
       </header>
 
       <main class="conteudo com-resumo">
         <ul class="planejador">
-          {filtrarPorCategoria(receitas, categoria).map((r) => {
+          {filtrarPorBusca(filtrarPorCategoria(receitas, categoria), caderno.ingredientes, busca).map((r) => {
             const porcoes = planejador[r.id];
             const escolhida = porcoes != null;
             return (

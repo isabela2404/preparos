@@ -36,7 +36,8 @@ import { aplicarMudancas, extrairCodigo, gerarCodigo } from './mudancas.js';
  * }} Caderno
  * @typedef {{
  *   planejador: Record<string, number>,  // receita → porções
- *   marcados: Record<string, number>     // ingrediente → quantidade na lista quando foi marcado (RN-07)
+ *   marcados: Record<string, number>,    // ingrediente → quantidade na lista quando foi marcado (RN-07)
+ *   avulsos: Record<string, { nome: string, setor: string, marcado: boolean }>  // RF-27
  * }} Estado
  * @typedef {'local' | 'sincronizado' | 'sincronizando' | 'offline' | 'erro'} Status
  */
@@ -45,7 +46,7 @@ export const sincronizacaoDisponivel = Boolean(import.meta.env.VITE_FIREBASE_PRO
 
 const CHAVE_ESTADO = 'caderno-de-preparos:estado';
 const CHAVE_CODIGO = 'caderno-de-preparos:codigo';
-const ESTADO_VAZIO = { planejador: {}, marcados: {} };
+const ESTADO_VAZIO = { planejador: {}, marcados: {}, avulsos: {} };
 
 /** @type {{ caderno: Caderno, estado: Estado, status: Status, codigo: string | null }} */
 let atual = {
@@ -99,10 +100,10 @@ async function conectar() {
   }
   publicar({ status: navigator.onLine ? 'sincronizando' : 'offline' });
   const firestore = await import('./firestore.js');
-  conexao = firestore.conectar(atual.codigo, cargaInicial, {
+  conexao = firestore.conectar(atual.codigo, {
     // Categorias e setores ficam no código; do banco vêm receitas e ingredientes.
     aoMudarCaderno: (dados) => publicar({ caderno: { ...cargaInicial, ...dados } }),
-    aoMudarEstado: (estado) => publicar({ estado }),
+    aoMudarEstado: (estado) => publicar({ estado: { ...ESTADO_VAZIO, ...estado } }),
     aoMudarStatus: (status) => publicar({ status }),
   });
 }
@@ -174,11 +175,12 @@ export function ajustarPorcoes(receitaId, delta) {
   definirPorcoes(receitaId, (atual.estado.planejador[receitaId] ?? 0) + delta);
 }
 
-/** RN-08: o Zerar do Planejador e da Lista apaga receitas, porções e marcações. */
+/** RN-08: o Zerar do Planejador e da Lista apaga receitas, porções, marcações e avulsos. */
 export function zerarPlanejador() {
   mudar([
     { campo: ['planejador'], valor: {} },
     { campo: ['marcados'], valor: {} },
+    { campo: ['avulsos'], valor: {} },
   ]);
 }
 
@@ -186,3 +188,55 @@ export function zerarPlanejador() {
 export function definirMarcacao(codigo, quantidade) {
   mudar([{ campo: ['marcados', codigo], valor: quantidade }]);
 }
+
+// ---------- Itens avulsos (RF-27) ----------
+
+export function adicionarAvulso(nome, setor) {
+  const id = `a${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`;
+  mudar([{ campo: ['avulsos', id], valor: { nome: nome.trim(), setor, marcado: false } }]);
+}
+
+export function marcarAvulso(id, marcado) {
+  mudar([{ campo: ['avulsos', id, 'marcado'], valor: marcado }]);
+}
+
+export function removerAvulso(id) {
+  mudar([{ campo: ['avulsos', id], valor: null }]);
+}
+
+// ---------- Cadastro de receitas e ingredientes ----------
+// Só com o caderno compartilhado: as receitas moram no banco (RF-31). As telas
+// só oferecem estas operações quando há código do casal.
+
+/** Grava a receita e os ingredientes novos que ela trouxe. */
+export function salvarReceita(receita, novosIngredientes = {}) {
+  const ordens = atual.caderno.receitas.map((r) => r.ordem ?? 0);
+  const anterior = atual.caderno.receitas.find((r) => r.id === receita.id);
+  conexao.salvarReceita({ ...receita, ordem: anterior?.ordem ?? Math.max(-1, ...ordens) + 1 }, novosIngredientes);
+}
+
+export function apagarReceita(id) {
+  if (atual.estado.planejador[id] != null) definirPorcoes(id, 0);
+  conexao.apagarReceita(id);
+}
+
+export function salvarIngrediente(id, ingrediente) {
+  conexao.salvarIngrediente(id, ingrediente);
+}
+
+export function apagarIngrediente(id) {
+  conexao.apagarIngrediente(id);
+}
+
+/** Cópia de segurança no formato da carga inicial (RNF-08). */
+export function exportarCaderno() {
+  const { caderno } = atual;
+  return {
+    versao: cargaInicial.versao,
+    categorias: cargaInicial.categorias,
+    setores: cargaInicial.setores,
+    ingredientes: Object.fromEntries(Object.entries(caderno.ingredientes).sort(([a], [b]) => a.localeCompare(b))),
+    receitas: caderno.receitas.map(({ ordem: _, ...receita }) => receita),
+  };
+}
+

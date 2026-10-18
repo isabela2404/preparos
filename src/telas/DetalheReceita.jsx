@@ -1,12 +1,12 @@
 import { useLayoutEffect, useState } from 'preact/hooks';
-import { ArrowLeft, ClipboardCheck, Clock, Lightbulb, Plus, Snowflake, Users } from 'lucide-preact';
+import { ArrowLeft, ChefHat, ClipboardCheck, Clock, Lightbulb, Pencil, Plus, Snowflake, Users } from 'lucide-preact';
 import { CapaReceita } from '../componentes/CapaReceita.jsx';
 import { ContadorPorcoes } from '../componentes/ContadorPorcoes.jsx';
 import { TagCategoria } from '../componentes/TagCategoria.jsx';
 import { definirPorcoes } from '../dados/repositorio.js';
 import { SETOR_POR_ID } from '../dominio/setores.js';
 import { formatarQuantidade } from '../dominio/unidades.js';
-import { voltar } from '../rotas.js';
+import { linkReceita, voltar } from '../rotas.js';
 
 // RF-04: foto, rendimento, tempo, conservação, ingredientes por porção com o
 // setor de cada um e passo a passo numerado. Na cozinha a receita inteira,
@@ -35,6 +35,9 @@ export function DetalheReceita({ receita, ingredientes, porcoes }) {
         <button type="button" class="botao-voltar" onClick={voltar} aria-label="Voltar">
           <ArrowLeft size={24} aria-hidden="true" />
         </button>
+        <a class="botao-editar" href={`${linkReceita(receita.id)}/editar`} aria-label="Editar receita">
+          <Pencil size={22} aria-hidden="true" />
+        </a>
       </div>
 
       <div class="detalhe-corpo">
@@ -77,6 +80,11 @@ export function DetalheReceita({ receita, ingredientes, porcoes }) {
             <ContadorPorcoes receita={receita} porcoes={porcoes} />
           </div>
         )}
+
+        {/* RF-06 */}
+        <a class="botao botao-secundario botao-largo" href={`${linkReceita(receita.id)}/cozinha`}>
+          <ChefHat size={22} aria-hidden="true" /> Modo cozinha
+        </a>
 
         <section aria-labelledby="titulo-ingredientes">
           <h2 id="titulo-ingredientes" class="secao-titulo">

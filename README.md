@@ -23,4 +23,6 @@ As regras de segurança do banco ficam em [firestore.rules](firestore.rules) e s
 
 ## Editar receitas
 
-Por enquanto as receitas ficam em [src/dados/carga-inicial.json](src/dados/carga-inicial.json). Depois de mudar o arquivo, aumente o número em `versao`: na próxima vez que um celular sincronizado abrir o app, ele regrava as receitas e os ingredientes no banco. Cada ingrediente da receita precisa existir no catálogo `ingredientes`, e as quantidades são sempre para **uma** porção, na unidade base (g, ml ou un). `npm test` avisa se algum código de ingrediente não existir no catálogo.
+As receitas e os ingredientes são editados no próprio app (lápis na receita, "Nova receita" no fim do Caderno, catálogo em Ajustes → Ingredientes), com o código do casal criado. Eles ficam no banco.
+
+[src/dados/carga-inicial.json](src/dados/carga-inicial.json) só popula o banco quando o código do casal é criado. Para guardar uma cópia atualizada, use Ajustes → Baixar cópia; o arquivo baixado tem o mesmo formato e pode substituir a carga inicial. Cada ingrediente da receita precisa existir no catálogo `ingredientes`, e as quantidades são sempre para **uma** porção, na unidade base (g, ml ou un). `npm test` avisa se algum código de ingrediente não existir no catálogo.

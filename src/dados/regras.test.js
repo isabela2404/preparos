@@ -39,9 +39,15 @@ describe.skipIf(!emulador)('regras do Firestore', () => {
   it('recusa código curto', () =>
     negado(setDoc(doc(db, 'casais', 'curto'), { planejador: {}, marcados: {} })));
 
+  it('aceita itens avulsos como mapa', async () => {
+    await updateDoc(casal, { 'avulsos.a1': { nome: 'Papel toalha', setor: 'temperos', marcado: false } });
+    expect((await getDoc(casal)).data().avulsos.a1.nome).toBe('Papel toalha');
+  });
+
   it('recusa campos fora do formato', async () => {
     await negado(updateDoc(casal, { outroCampo: 1 }));
     await negado(updateDoc(casal, { planejador: 'texto' }));
+    await negado(updateDoc(casal, { avulsos: ['lista'] }));
   });
 
   it('lê e grava receitas e ingredientes do casal, e nada além disso', async () => {

@@ -63,14 +63,26 @@ export const GRUPO_DESPENSA = { id: 'despensa', nome: 'Confira na despensa' };
 /**
  * RF-22 e RF-23: agrupa por setor na ordem do mercado, com os básicos (RN-10)
  * num grupo final. Dentro de cada grupo, os marcados vão para o fim.
+ * Itens avulsos (RF-27) entram no setor escolhido, sem quantidade.
  */
-export function agruparLista(itens, marcados) {
+export function agruparLista(itens, marcados, avulsos = {}) {
   const grupos = [...SETORES, GRUPO_DESPENSA].map((s) => ({ id: s.id, nome: s.nome, itens: [] }));
   const grupoPorId = Object.fromEntries(grupos.map((g) => [g.id, g]));
 
   for (const item of itens) {
     const grupo = item.basico ? grupoPorId.despensa : (grupoPorId[item.setor] ?? grupoPorId.despensa);
     grupo.itens.push({ ...item, marcado: estaMarcado(item, marcados) });
+  }
+  for (const [id, avulso] of Object.entries(avulsos)) {
+    (grupoPorId[avulso.setor] ?? grupoPorId.temperos).itens.push({
+      codigo: `avulso:${id}`,
+      id,
+      nome: avulso.nome,
+      avulso: true,
+      marcado: Boolean(avulso.marcado),
+      qtdCompra: null,
+      aGosto: false,
+    });
   }
 
   return grupos
@@ -83,6 +95,7 @@ export function agruparLista(itens, marcados) {
 }
 
 export function textoQuantidade(item) {
+  if (item.avulso) return '';
   if (item.qtdCompra == null) return 'a gosto';
   const qtd = formatarQuantidade(item.qtdCompra, item.unidade);
   return item.aGosto ? `${qtd} + a gosto` : qtd;
@@ -93,6 +106,6 @@ export function textoWhatsApp(grupos) {
   const blocos = grupos
     .map((g) => ({ nome: g.nome, itens: g.itens.filter((i) => !i.marcado) }))
     .filter((b) => b.itens.length)
-    .map((b) => [`*${b.nome}*`, ...b.itens.map((i) => `- ${i.nome}: ${textoQuantidade(i)}`)].join('\n'));
+    .map((b) => [`*${b.nome}*`, ...b.itens.map((i) => `- ${i.nome}${i.avulso ? '' : `: ${textoQuantidade(i)}`}`)].join('\n'));
   return ['*Lista de compras*', ...blocos].join('\n\n');
 }
