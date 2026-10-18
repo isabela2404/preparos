@@ -1,0 +1,26 @@
+rules_version = '2';
+
+// Sem login (seção 7): cada casal vive em casais/{codigo}, e o código longo e
+// aleatório é o que protege os dados. Quem sabe o caminho lê e grava; ninguém
+// pode listar ou procurar outros casais (RNF-07).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function codigoValido(codigo) {
+      return codigo.matches('[A-Za-z0-9_-]{32,64}');
+    }
+
+    match /casais/{codigo} {
+      allow get: if codigoValido(codigo);
+      allow create, update: if codigoValido(codigo)
+        && request.resource.data.keys().hasOnly(['planejador', 'marcados', 'versaoCarga', 'criadoEm'])
+        && request.resource.data.planejador is map
+        && request.resource.data.marcados is map;
+      allow list, delete: if false;
+
+      match /{colecao}/{id} {
+        allow read, write: if codigoValido(codigo) && colecao in ['receitas', 'ingredientes'];
+      }
+    }
+  }
+}

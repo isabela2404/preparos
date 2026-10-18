@@ -7,16 +7,20 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "test:regras": "firebase emulators:exec --only firestore --project demo-preparos \"vitest run src/dados/regras.test.js\""
   },
   "dependencies": {
     "@fontsource-variable/bricolage-grotesque": "^5.3.0",
     "@fontsource-variable/figtree": "^5.3.0",
+    "firebase": "^12.19.0",
     "lucide-preact": "^1.59.0",
-    "preact": "^10.29.8"
+    "preact": "^10.29.8",
+    "uqr": "^0.1.3"
   },
   "devDependencies": {
     "@preact/preset-vite": "^2.10.6",
+    "firebase-tools": "^15.32.1",
     "vite": "^8.3.4",
     "vite-plugin-pwa": "^2.0.0",
     "vitest": "^4.1.12"

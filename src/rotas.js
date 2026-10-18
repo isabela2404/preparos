@@ -6,7 +6,9 @@ import { useEffect, useState } from 'preact/hooks';
 export function interpretarRota(hash) {
   const [tela, id] = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
   if (tela === 'receita' && id) return { tela: 'receita', id: decodeURIComponent(id) };
-  if (tela === 'planejador' || tela === 'lista') return { tela };
+  // Link de convite que o outro celular manda: #/entrar/<código do casal>.
+  if (tela === 'entrar' && id) return { tela: 'ajustes', convite: id };
+  if (tela === 'planejador' || tela === 'lista' || tela === 'ajustes') return { tela };
   return { tela: 'caderno' };
 }
 

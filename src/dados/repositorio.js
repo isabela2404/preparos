@@ -1,12 +1,15 @@
 // Camada de dados (RNF-09). As telas só conversam com este módulo, para que a
 // origem dos dados possa trocar de serviço sem mexer no resto do app.
 //
-// Hoje: o caderno vem da carga inicial empacotada no app, e o estado do
-// planejador e da lista fica no aparelho (localStorage).
-// Fase 3: os dois passam para o Firestore, com a carga inicial populando o
-// banco na primeira vez. As funções abaixo mantêm o mesmo formato.
+// Sem código do casal, tudo fica no aparelho: o caderno vem da carga
+// empacotada e o estado vai para o localStorage. Com código, o Firestore
+// passa a ser a fonte (./firestore.js) e o localStorage guarda uma cópia
+// para o app abrir na hora, mesmo sem internet ou com o banco fora do ar
+// (RNF-02).
 
+import { calcularItens } from '../dominio/lista.js';
 import cargaInicial from './carga-inicial.json';
+import { aplicarMudancas, extrairCodigo, gerarCodigo } from './mudancas.js';
 
 /**
  * @typedef {'g' | 'ml' | 'un'} Unidade
@@ -35,86 +38,156 @@ import cargaInicial from './carga-inicial.json';
  *   planejador: Record<string, number>,  // receita → porções
  *   marcados: Record<string, number>     // ingrediente → quantidade na lista quando foi marcado (RN-07)
  * }} Estado
+ * @typedef {'local' | 'sincronizado' | 'sincronizando' | 'offline' | 'erro'} Status
  */
 
-/** @returns {Promise<Caderno>} */
-export async function carregarCaderno() {
-  return cargaInicial;
-}
+export const sincronizacaoDisponivel = Boolean(import.meta.env.VITE_FIREBASE_PROJECT_ID);
 
-// ---------- Estado do planejador e da lista ----------
-
-const CHAVE = 'caderno-de-preparos:estado';
+const CHAVE_ESTADO = 'caderno-de-preparos:estado';
+const CHAVE_CODIGO = 'caderno-de-preparos:codigo';
 const ESTADO_VAZIO = { planejador: {}, marcados: {} };
 
-let estado = lerDoAparelho();
+/** @type {{ caderno: Caderno, estado: Estado, status: Status, codigo: string | null }} */
+let atual = {
+  caderno: cargaInicial,
+  estado: { ...ESTADO_VAZIO, ...ler(CHAVE_ESTADO, true) },
+  status: 'local',
+  codigo: ler(CHAVE_CODIGO),
+};
+let conexao = null;
 const ouvintes = new Set();
 
-function lerDoAparelho() {
+function ler(chave, json = false) {
   try {
-    return { ...ESTADO_VAZIO, ...JSON.parse(localStorage.getItem(CHAVE)) };
+    const valor = localStorage.getItem(chave);
+    return json ? JSON.parse(valor) : valor;
   } catch {
-    return ESTADO_VAZIO;
+    return null;
   }
 }
 
-function publicar(novo) {
-  estado = novo;
+function guardar(chave, valor) {
   try {
-    localStorage.setItem(CHAVE, JSON.stringify(estado));
+    if (valor == null) localStorage.removeItem(chave);
+    else localStorage.setItem(chave, typeof valor === 'string' ? valor : JSON.stringify(valor));
   } catch {
-    // Sem armazenamento (navegação privada): o estado vale só nesta sessão.
+    // Sem armazenamento (navegação privada): vale só nesta sessão.
   }
-  ouvintes.forEach((ouvinte) => ouvinte(estado));
 }
 
-// Outra aba do mesmo aparelho mudou o estado.
-addEventListener('storage', (evento) => {
-  if (evento.key !== CHAVE) return;
-  estado = lerDoAparelho();
-  ouvintes.forEach((ouvinte) => ouvinte(estado));
-});
+function publicar(parcial) {
+  atual = { ...atual, ...parcial };
+  if (parcial.estado) guardar(CHAVE_ESTADO, atual.estado);
+  ouvintes.forEach((ouvinte) => ouvinte(atual));
+}
 
-/** Chama `aoMudar` agora e a cada mudança. Devolve a função que para de observar. */
-export function observarEstado(aoMudar) {
+/** Chama `aoMudar({ caderno, estado, status, codigo })` agora e a cada mudança. Devolve a função que para. */
+export function observar(aoMudar) {
   ouvintes.add(aoMudar);
-  aoMudar(estado);
+  aoMudar(atual);
   return () => ouvintes.delete(aoMudar);
 }
 
-// Cada operação mexe num campo só, como será no Firestore (seção 7).
+// ---------- Conexão ----------
+
+async function conectar() {
+  conexao?.desconectar();
+  conexao = null;
+  if (!atual.codigo || !sincronizacaoDisponivel) {
+    publicar({ status: 'local', caderno: cargaInicial });
+    return;
+  }
+  publicar({ status: navigator.onLine ? 'sincronizando' : 'offline' });
+  const firestore = await import('./firestore.js');
+  conexao = firestore.conectar(atual.codigo, cargaInicial, {
+    // Categorias e setores ficam no código; do banco vêm receitas e ingredientes.
+    aoMudarCaderno: (dados) => publicar({ caderno: { ...cargaInicial, ...dados } }),
+    aoMudarEstado: (estado) => publicar({ estado }),
+    aoMudarStatus: (status) => publicar({ status }),
+  });
+}
+
+addEventListener('offline', () => conexao && publicar({ status: 'offline' }));
+addEventListener('online', () => conexao && publicar({ status: 'sincronizando' }));
+
+// Outra aba do mesmo aparelho mudou o estado (no modo local; com o banco, o Firestore avisa).
+addEventListener('storage', (evento) => {
+  if (evento.key === CHAVE_ESTADO && !conexao) publicar({ estado: { ...ESTADO_VAZIO, ...ler(CHAVE_ESTADO, true) } });
+});
+
+conectar();
+
+// ---------- Código do casal ----------
+
+/** Cria o caderno compartilhado a partir deste aparelho, levando o planejador e a lista atuais. */
+export async function criarCasal() {
+  if (!navigator.onLine) throw new Error('Precisa de internet para criar o código.');
+  const codigo = gerarCodigo();
+  const firestore = await import('./firestore.js');
+  await firestore.criarCasal(codigo, cargaInicial, atual.estado);
+  guardar(CHAVE_CODIGO, codigo);
+  publicar({ codigo });
+  await conectar();
+}
+
+/** Passa a usar o caderno de outro aparelho. O planejador deste aparelho é substituído pelo de lá. */
+export async function entrarNoCasal(texto) {
+  const codigo = extrairCodigo(texto);
+  if (!codigo) throw new Error('Esse código não parece certo. Ele tem 32 letras e números.');
+  if (codigo === atual.codigo) return;
+  if (!navigator.onLine) throw new Error('Precisa de internet para entrar com o código.');
+  const firestore = await import('./firestore.js');
+  if (!(await firestore.casalExiste(codigo))) throw new Error('Não achei nenhum caderno com esse código.');
+  guardar(CHAVE_CODIGO, codigo);
+  publicar({ codigo });
+  await conectar();
+}
+
+// ---------- Planejador e lista ----------
+// Cada operação vira uma lista de mudanças de campo: aplica aqui na hora e
+// manda o mesmo para o banco.
+
+function mudar(mudancas) {
+  publicar({ estado: aplicarMudancas(atual.estado, mudancas) });
+  conexao?.gravar(mudancas);
+}
 
 /** RN-06: porções de 1 a 99; 0 tira a receita do planejador. */
 export function definirPorcoes(receitaId, porcoes) {
-  const { [receitaId]: _, ...outras } = estado.planejador;
-  const planejador = porcoes >= 1 ? { ...outras, [receitaId]: Math.min(99, Math.round(porcoes)) } : outras;
-  publicar({ ...estado, planejador });
+  const valor = porcoes >= 1 ? Math.min(99, Math.round(porcoes)) : null;
+  const mudancas = [{ campo: ['planejador', receitaId], valor }];
+  if (valor == null) {
+    // RN-07: marcações de itens que saem da lista não ficam guardadas.
+    const { [receitaId]: _, ...planejador } = atual.estado.planejador;
+    const naLista = new Set(
+      calcularItens(planejador, atual.caderno.receitas, atual.caderno.ingredientes).map((i) => i.codigo),
+    );
+    for (const codigo of Object.keys(atual.estado.marcados)) {
+      if (!naLista.has(codigo)) mudancas.push({ campo: ['marcados', codigo], valor: null });
+    }
+  }
+  mudar(mudancas);
 }
 
 /** Soma `delta` às porções atuais; parte do valor gravado, então toques rápidos não se perdem. */
 export function ajustarPorcoes(receitaId, delta) {
-  definirPorcoes(receitaId, (estado.planejador[receitaId] ?? 0) + delta);
+  definirPorcoes(receitaId, (atual.estado.planejador[receitaId] ?? 0) + delta);
 }
 
 /** RN-08: zerar o planejador esvazia a lista, então as marcações também saem. */
 export function zerarPlanejador() {
-  publicar({ ...estado, planejador: {}, marcados: {} });
+  mudar([
+    { campo: ['planejador'], valor: {} },
+    { campo: ['marcados'], valor: {} },
+  ]);
 }
 
 /** `quantidade` null desmarca o item. */
 export function definirMarcacao(codigo, quantidade) {
-  const { [codigo]: _, ...outros } = estado.marcados;
-  const marcados = quantidade == null ? outros : { ...outros, [codigo]: quantidade };
-  publicar({ ...estado, marcados });
-}
-
-export function removerMarcacoes(codigos) {
-  const marcados = { ...estado.marcados };
-  codigos.forEach((codigo) => delete marcados[codigo]);
-  publicar({ ...estado, marcados });
+  mudar([{ campo: ['marcados', codigo], valor: quantidade }]);
 }
 
 /** RF-26: limpa as marcações sem mexer no planejador. */
 export function zerarMarcacoes() {
-  publicar({ ...estado, marcados: {} });
+  mudar([{ campo: ['marcados'], valor: {} }]);
 }

@@ -1,12 +1,13 @@
 import { useLayoutEffect } from 'preact/hooks';
 import { CardReceita } from '../componentes/CardReceita.jsx';
 import { ChipsCategoria } from '../componentes/ChipsCategoria.jsx';
+import { TopoTitulo } from '../componentes/TopoTitulo.jsx';
 import { filtrarPorCategoria } from '../dominio/categorias.js';
 
 // Guarda a rolagem da galeria para que voltar de uma receita não leve ao topo.
 let rolagemSalva = 0;
 
-export function Caderno({ receitas, planejador, categoria, aoMudarCategoria }) {
+export function Caderno({ receitas, planejador, status, categoria, aoMudarCategoria }) {
   useLayoutEffect(() => {
     scrollTo(0, rolagemSalva);
     return () => {
@@ -19,7 +20,7 @@ export function Caderno({ receitas, planejador, categoria, aoMudarCategoria }) {
   return (
     <>
       <header class="topo">
-        <h1 class="topo-titulo">Caderno de Preparos</h1>
+        <TopoTitulo titulo="Caderno de Preparos" status={status} />
         <ChipsCategoria
           selecionada={categoria}
           aoSelecionar={(id) => {

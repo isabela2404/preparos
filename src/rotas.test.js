@@ -8,9 +8,17 @@ describe('interpretarRota', () => {
     expect(interpretarRota('#/qualquer')).toEqual({ tela: 'caderno' });
   });
 
-  it('reconhece planejador e lista', () => {
+  it('reconhece planejador, lista e ajustes', () => {
     expect(interpretarRota('#/planejador')).toEqual({ tela: 'planejador' });
     expect(interpretarRota('#/lista')).toEqual({ tela: 'lista' });
+    expect(interpretarRota('#/ajustes')).toEqual({ tela: 'ajustes' });
+  });
+
+  it('abre os ajustes com o convite do link', () => {
+    expect(interpretarRota('#/entrar/AbCdEfGhIjKlMnOpQrStUvWxYz012345')).toEqual({
+      tela: 'ajustes',
+      convite: 'AbCdEfGhIjKlMnOpQrStUvWxYz012345',
+    });
   });
 
   it('ida e volta do link de receita', () => {

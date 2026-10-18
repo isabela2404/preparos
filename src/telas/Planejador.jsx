@@ -4,11 +4,12 @@ import { IconeCategoria } from '../componentes/CapaReceita.jsx';
 import { ChipsCategoria } from '../componentes/ChipsCategoria.jsx';
 import { Confirmacao } from '../componentes/Confirmacao.jsx';
 import { ContadorPorcoes } from '../componentes/ContadorPorcoes.jsx';
+import { TopoTitulo } from '../componentes/TopoTitulo.jsx';
 import { definirPorcoes, zerarPlanejador } from '../dados/repositorio.js';
 import { CATEGORIA_POR_ID, filtrarPorCategoria } from '../dominio/categorias.js';
 
 // RF-10 a RF-15.
-export function Planejador({ receitas, planejador, categoria, aoMudarCategoria }) {
+export function Planejador({ receitas, planejador, status, categoria, aoMudarCategoria }) {
   const [confirmando, setConfirmando] = useState(false);
 
   const escolhidas = receitas.filter((r) => planejador[r.id] != null);
@@ -17,7 +18,7 @@ export function Planejador({ receitas, planejador, categoria, aoMudarCategoria }
   return (
     <>
       <header class="topo">
-        <h1 class="topo-titulo">Planejador</h1>
+        <TopoTitulo titulo="Planejador" status={status} />
         <ChipsCategoria selecionada={categoria} aoSelecionar={aoMudarCategoria} />
       </header>
 

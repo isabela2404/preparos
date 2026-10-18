@@ -21,7 +21,10 @@ A especificação completa está em [docs/visao-produto-requisitos.md](docs/visa
 ## Estrutura e comandos
 
 - `src/dominio/`: regras puras, testadas com Vitest (categorias, setores, unidades RN-03/RN-04, validação da carga RN-02, cálculo e agrupamento da lista RN-01 a RN-10).
-- `src/dados/repositorio.js`: a camada de dados trocável (RNF-09). As telas só leem e gravam por ela. Hoje o caderno vem de `carga-inicial.json` e o estado (planejador e marcações) fica no localStorage; cada operação mexe num campo só, como o Firestore fará na fase 3.
+- `src/dados/repositorio.js`: a camada de dados trocável (RNF-09). As telas só leem (`useRepositorio`) e gravam por ela. Sem código do casal, tudo fica no aparelho (carga empacotada + localStorage). Com código, `src/dados/firestore.js` é carregado por import dinâmico e passa a ser a fonte; o localStorage guarda uma cópia para abrir na hora.
+- Cada operação vira uma lista de mudanças de campo (`src/dados/mudancas.js`), aplicada na hora no aparelho e enviada ao Firestore com `updateDoc` só nos campos tocados.
+- Banco: `casais/{codigo}` com `planejador`, `marcados`, `versaoCarga`; subcoleções `receitas` (com `ordem`) e `ingredientes`. Subir `versao` da carga regrava as receitas no banco. Regras em `firestore.rules`, testadas com `npm run test:regras` (emulador, Java 21).
+- Configuração do Firebase só por variáveis de ambiente (`VITE_FIREBASE_*`): `.env.local` na máquina e Variables do GitHub Actions na publicação. Nunca no código.
 - `src/dados/carga-inicial.json`: a carga inicial do casal (29 receitas, 58 ingredientes). Traz também as listas de categorias e setores, que precisam usar os mesmos códigos de `src/dominio/`, e as `premissas` das conversões. O formato está na seção 8 do documento.
 - `src/telas/`, `src/componentes/`: interface. Nomes de código e textos em português.
 - `npm run dev`, `npm test`, `npm run build`, `npm run preview`.

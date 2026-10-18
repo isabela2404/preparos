@@ -1,6 +1,7 @@
 import { useState } from 'preact/hooks';
 import { Apple, Archive, Check, ClipboardList, Drumstick, Milk, Package, Share2, Sparkles } from 'lucide-preact';
 import { Confirmacao } from '../componentes/Confirmacao.jsx';
+import { TopoTitulo } from '../componentes/TopoTitulo.jsx';
 import { definirMarcacao, zerarMarcacoes } from '../dados/repositorio.js';
 import { quantidadeAoMarcar, textoQuantidade, textoWhatsApp } from '../dominio/lista.js';
 
@@ -14,7 +15,7 @@ const ICONE_SETOR = {
 };
 
 // RF-20 a RF-26.
-export function Lista({ grupos }) {
+export function Lista({ grupos, status }) {
   const [confirmando, setConfirmando] = useState(false);
 
   if (!grupos.length) {
@@ -37,7 +38,7 @@ export function Lista({ grupos }) {
   return (
     <>
       <header class="topo">
-        <h1 class="topo-titulo">Lista de compras</h1>
+        <TopoTitulo titulo="Lista de compras" status={status} />
         <div class="progresso">
           <span>
             {feitos} de {total} itens

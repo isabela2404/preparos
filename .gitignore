@@ -6,3 +6,8 @@ dev-dist/
 
 # Versão em PDF da especificação: cita nomes reais, fica só local.
 docs/*.pdf
+
+# Firebase
+.firebaserc
+*-debug.log
+.env

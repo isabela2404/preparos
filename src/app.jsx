@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from 'preact/hooks';
 import { BarraInferior } from './componentes/BarraInferior.jsx';
-import { carregarCaderno, observarEstado, removerMarcacoes } from './dados/repositorio.js';
+import { useRepositorio } from './dados/useRepositorio.js';
 import { agruparLista, calcularItens } from './dominio/lista.js';
 import { validarCarga } from './dominio/validacao.js';
 import { useRota } from './rotas.js';
+import { Ajustes } from './telas/Ajustes.jsx';
 import { Caderno } from './telas/Caderno.jsx';
 import { DetalheReceita } from './telas/DetalheReceita.jsx';
 import { Lista } from './telas/Lista.jsx';
@@ -11,36 +12,28 @@ import { Planejador } from './telas/Planejador.jsx';
 
 export function App() {
   const rota = useRota();
-  const [caderno, setCaderno] = useState(null);
-  const [estado, setEstado] = useState(null);
+  const dados = useRepositorio();
   const [categoriaCaderno, setCategoriaCaderno] = useState(null);
   const [categoriaPlanejador, setCategoriaPlanejador] = useState(null);
 
+  const caderno = dados?.caderno;
+  const estado = dados?.estado;
+
   useEffect(() => {
-    carregarCaderno().then((dados) => {
-      const erros = validarCarga(dados);
-      if (erros.length) console.warn('Problemas no caderno:\n' + erros.join('\n'));
-      setCaderno(dados);
-    });
-    return observarEstado(setEstado);
-  }, []);
+    if (!caderno) return;
+    const erros = validarCarga(caderno);
+    if (erros.length) console.warn('Problemas no caderno:\n' + erros.join('\n'));
+  }, [caderno]);
 
   // RN-01: a lista é recalculada sempre que o planejador muda (RF-15).
   const itens = useMemo(
-    () => (caderno && estado ? calcularItens(estado.planejador, caderno.receitas, caderno.ingredientes) : null),
+    () => (caderno ? calcularItens(estado.planejador, caderno.receitas, caderno.ingredientes) : []),
     [caderno, estado?.planejador],
   );
-  const grupos = useMemo(() => (itens ? agruparLista(itens, estado.marcados) : []), [itens, estado?.marcados]);
+  const grupos = useMemo(() => (estado ? agruparLista(itens, estado.marcados) : []), [itens, estado?.marcados]);
 
-  // RN-07: marcações de itens que saíram da lista não ficam guardadas.
-  useEffect(() => {
-    if (!itens) return;
-    const naLista = new Set(itens.map((i) => i.codigo));
-    const sobrando = Object.keys(estado.marcados).filter((codigo) => !naLista.has(codigo));
-    if (sobrando.length) removerMarcacoes(sobrando);
-  }, [itens]);
-
-  if (!caderno || !estado) return null;
+  if (!dados) return null;
+  const { status, codigo } = dados;
 
   let tela;
   switch (rota.tela) {
@@ -59,19 +52,24 @@ export function App() {
         <Planejador
           receitas={caderno.receitas}
           planejador={estado.planejador}
+          status={status}
           categoria={categoriaPlanejador}
           aoMudarCategoria={setCategoriaPlanejador}
         />
       );
       break;
     case 'lista':
-      tela = <Lista grupos={grupos} />;
+      tela = <Lista grupos={grupos} status={status} />;
+      break;
+    case 'ajustes':
+      tela = <Ajustes codigo={codigo} status={status} convite={rota.convite} />;
       break;
     default:
       tela = (
         <Caderno
           receitas={caderno.receitas}
           planejador={estado.planejador}
+          status={status}
           categoria={categoriaCaderno}
           aoMudarCategoria={setCategoriaCaderno}
         />
