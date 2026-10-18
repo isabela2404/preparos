@@ -1,0 +1,1931 @@
+{
+  "versao": 1,
+  "categorias": [
+    {
+      "id": "proteinas",
+      "nome": "Proteínas"
+    },
+    {
+      "id": "bases-graos",
+      "nome": "Bases, Grãos e Tubérculos"
+    },
+    {
+      "id": "legumes",
+      "nome": "Legumes e Acompanhamentos"
+    },
+    {
+      "id": "molhos",
+      "nome": "Molhos e Temperos Base"
+    },
+    {
+      "id": "lanches",
+      "nome": "Lanches Rápidos"
+    },
+    {
+      "id": "sucos",
+      "nome": "Sucos e Bebidas"
+    }
+  ],
+  "setores": [
+    {
+      "id": "acougue",
+      "nome": "Açougue e Peixaria"
+    },
+    {
+      "id": "hortifruti",
+      "nome": "Hortifrúti"
+    },
+    {
+      "id": "mercearia",
+      "nome": "Mercearia e Grãos"
+    },
+    {
+      "id": "frios",
+      "nome": "Frios e Laticínios"
+    },
+    {
+      "id": "temperos",
+      "nome": "Temperos e Diversos"
+    }
+  ],
+  "premissas": [
+    "Porção: cada receita tem um número padrão de porções (porcoesPadrao) e uma descrição do que é 1 porção (descricaoPorcao). Foram escolhidos por mim e devem ser revisados.",
+    "qtdPorPorcao está na unidade base do ingrediente (g, ml ou un) do catálogo. É o total da receita dividido por porcoesPadrao, arredondado a 4 casas.",
+    "Medidas caseiras foram convertidas pelo campo medidas de cada ingrediente (ex.: 1 colher de sopa de azeite = 13 ml). São valores aproximados.",
+    "aGosto = true e qtdPorPorcao = null: a receita não traz quantidade (sal, pimenta). O app deve listar o item sem quantidade ou ocultar itens marcados como basico.",
+    "Água e utensílios (papel toalha, pote, formas de gelo) não entram como ingredientes; continuam no texto original.",
+    "Quantidades que não estavam na receita e foram assumidas: salsinha 1 colher de sopa; cominho do homus e da carne moída 1 colher de chá; orégano dos legumes assados 1 colher de chá; páprica doce na batata-doce 1 colher de chá (em vez de alecrim); azeite da sopa 1 colher de sopa; fruta do overnight oats 100 g; óleo de coco da panqueca 1 colher de sopa; cenoura da pasta de atum 1/2 unidade; limão no chá de hibisco 1 unidade.",
+    "Escolhas entre alternativas: hortelã no molho de iogurte; limão no chá de hibisco; opção 1 (pepino, limão, hortelã) na água saborizada; couve nas folhas lavadas; laranja nos cubos de suco; recheio da tapioca fica só no texto.",
+    "Categorias: Café da manhã foi fundido em Lanches Rápidos; as 4 receitas têm a tag cafe-da-manha.",
+    "Ovo foi colocado em Frios e Laticínios, e o feijão branco em lata, o atum e o grão-de-bico em Mercearia. Ajuste se no seu mercado for outro corredor.",
+    "foto = null em todas: o app mostra o ícone da categoria até você adicionar o arquivo."
+  ],
+  "ingredientes": {
+    "peito-frango": {
+      "nome": "Peito ou sobrecoxa de frango sem pele",
+      "unidade": "g",
+      "setor": "acougue",
+      "medidas": {}
+    },
+    "carne-moida": {
+      "nome": "Carne moída magra (patinho)",
+      "unidade": "g",
+      "setor": "acougue",
+      "medidas": {}
+    },
+    "ovo": {
+      "nome": "Ovo",
+      "unidade": "un",
+      "setor": "frios",
+      "medidas": {}
+    },
+    "aveia": {
+      "nome": "Aveia em flocos",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "xic": 80,
+        "cs": 10
+      }
+    },
+    "cebola": {
+      "nome": "Cebola",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "un": 150,
+        "peq": 100
+      }
+    },
+    "cebola-roxa": {
+      "nome": "Cebola roxa",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "un": 150
+      }
+    },
+    "alho": {
+      "nome": "Alho",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "dente": 5
+      }
+    },
+    "salsinha": {
+      "nome": "Salsinha",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "cs": 4
+      }
+    },
+    "cebolinha": {
+      "nome": "Cebolinha",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "cs": 4
+      }
+    },
+    "hortela": {
+      "nome": "Hortelã",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "cs": 3
+      }
+    },
+    "limao": {
+      "nome": "Limão",
+      "unidade": "un",
+      "setor": "hortifruti",
+      "medidas": {}
+    },
+    "laranja": {
+      "nome": "Laranja",
+      "unidade": "un",
+      "setor": "hortifruti",
+      "medidas": {}
+    },
+    "banana": {
+      "nome": "Banana",
+      "unidade": "un",
+      "setor": "hortifruti",
+      "medidas": {}
+    },
+    "manga": {
+      "nome": "Manga",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "xic": 160
+      }
+    },
+    "fruta": {
+      "nome": "Fruta para finalizar",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {}
+    },
+    "batata-doce": {
+      "nome": "Batata-doce",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {}
+    },
+    "batata": {
+      "nome": "Batata",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "un": 150
+      }
+    },
+    "brocolis": {
+      "nome": "Brócolis",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "un": 300
+      }
+    },
+    "cenoura": {
+      "nome": "Cenoura",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "un": 100
+      }
+    },
+    "abobrinha": {
+      "nome": "Abobrinha",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "un": 200
+      }
+    },
+    "pimentao": {
+      "nome": "Pimentão",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "un": 150
+      }
+    },
+    "tomate": {
+      "nome": "Tomate",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "un": 120,
+        "xic": 150
+      }
+    },
+    "pepino": {
+      "nome": "Pepino",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "un": 200
+      }
+    },
+    "couve": {
+      "nome": "Couve",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "xic": 50,
+        "maco": 300
+      }
+    },
+    "espinafre": {
+      "nome": "Espinafre",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "xic": 30,
+        "punhado": 30
+      }
+    },
+    "alface": {
+      "nome": "Alface ou rúcula",
+      "unidade": "g",
+      "setor": "hortifruti",
+      "medidas": {
+        "un": 250
+      }
+    },
+    "arroz-integral": {
+      "nome": "Arroz integral",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "xic": 180
+      }
+    },
+    "quinoa": {
+      "nome": "Quinoa",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "xic": 170
+      }
+    },
+    "feijao": {
+      "nome": "Feijão seco",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {}
+    },
+    "feijao-branco": {
+      "nome": "Feijão branco em lata",
+      "unidade": "un",
+      "setor": "mercearia",
+      "medidas": {}
+    },
+    "grao-de-bico": {
+      "nome": "Grão-de-bico cozido (ou em lata)",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "xic": 160
+      }
+    },
+    "azeite": {
+      "nome": "Azeite",
+      "unidade": "ml",
+      "setor": "mercearia",
+      "medidas": {
+        "cs": 13,
+        "cc": 4
+      }
+    },
+    "vinagre": {
+      "nome": "Vinagre",
+      "unidade": "ml",
+      "setor": "mercearia",
+      "medidas": {
+        "cs": 15
+      }
+    },
+    "oleo-coco": {
+      "nome": "Óleo de coco",
+      "unidade": "ml",
+      "setor": "mercearia",
+      "medidas": {
+        "cs": 13
+      }
+    },
+    "tahine": {
+      "nome": "Tahine",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "cs": 15
+      }
+    },
+    "chia": {
+      "nome": "Chia",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "cs": 12
+      }
+    },
+    "uvas-passas": {
+      "nome": "Uvas-passas",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "xic": 160
+      }
+    },
+    "castanhas": {
+      "nome": "Castanhas e sementes",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "xic": 140
+      }
+    },
+    "mel": {
+      "nome": "Mel",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "cs": 21
+      }
+    },
+    "atum": {
+      "nome": "Atum em lata",
+      "unidade": "un",
+      "setor": "mercearia",
+      "medidas": {}
+    },
+    "mostarda": {
+      "nome": "Mostarda",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "cs": 15
+      }
+    },
+    "extrato-tomate": {
+      "nome": "Extrato de tomate",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "cs": 20
+      }
+    },
+    "goma-tapioca": {
+      "nome": "Goma de tapioca",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "cs": 20
+      }
+    },
+    "hibisco": {
+      "nome": "Flor de hibisco seca",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "cs": 4
+      }
+    },
+    "fermento": {
+      "nome": "Fermento em pó",
+      "unidade": "g",
+      "setor": "mercearia",
+      "medidas": {
+        "cc": 4
+      }
+    },
+    "iogurte": {
+      "nome": "Iogurte natural integral",
+      "unidade": "g",
+      "setor": "frios",
+      "medidas": {
+        "xic": 240
+      }
+    },
+    "leite": {
+      "nome": "Leite",
+      "unidade": "ml",
+      "setor": "frios",
+      "medidas": {
+        "xic": 240
+      }
+    },
+    "queijo-ralado": {
+      "nome": "Queijo ralado",
+      "unidade": "g",
+      "setor": "frios",
+      "medidas": {
+        "xic": 100
+      }
+    },
+    "sal": {
+      "nome": "Sal",
+      "unidade": "g",
+      "setor": "temperos",
+      "medidas": {
+        "cc": 6,
+        "cs": 18
+      },
+      "basico": true
+    },
+    "pimenta": {
+      "nome": "Pimenta-do-reino",
+      "unidade": "g",
+      "setor": "temperos",
+      "medidas": {
+        "cc": 2
+      },
+      "basico": true
+    },
+    "paprica-doce": {
+      "nome": "Páprica doce",
+      "unidade": "g",
+      "setor": "temperos",
+      "medidas": {
+        "cs": 7,
+        "cc": 2.5
+      }
+    },
+    "paprica-defumada": {
+      "nome": "Páprica defumada",
+      "unidade": "g",
+      "setor": "temperos",
+      "medidas": {
+        "cc": 2.5
+      }
+    },
+    "alho-po": {
+      "nome": "Alho em pó",
+      "unidade": "g",
+      "setor": "temperos",
+      "medidas": {
+        "cs": 9,
+        "cc": 3
+      }
+    },
+    "cebola-po": {
+      "nome": "Cebola em pó",
+      "unidade": "g",
+      "setor": "temperos",
+      "medidas": {
+        "cs": 8
+      }
+    },
+    "cominho": {
+      "nome": "Cominho",
+      "unidade": "g",
+      "setor": "temperos",
+      "medidas": {
+        "cs": 7,
+        "cc": 2
+      }
+    },
+    "oregano": {
+      "nome": "Orégano",
+      "unidade": "g",
+      "setor": "temperos",
+      "medidas": {
+        "cs": 3,
+        "cc": 1
+      }
+    },
+    "canela": {
+      "nome": "Canela em pó",
+      "unidade": "g",
+      "setor": "temperos",
+      "medidas": {
+        "cc": 2.5
+      }
+    },
+    "louro": {
+      "nome": "Folha de louro",
+      "unidade": "un",
+      "setor": "temperos",
+      "medidas": {}
+    }
+  },
+  "receitas": [
+    {
+      "id": "frango-assado-temperado",
+      "nome": "Frango assado temperado",
+      "categoria": "proteinas",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 4,
+      "descricaoPorcao": "200 g de frango",
+      "rendimentoOriginal": "4 porções",
+      "tempo": "45 min",
+      "conservacao": {
+        "Geladeira": "3 a 4 dias",
+        "Freezer": "3 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "peito-frango",
+          "qtdPorPorcao": 200.0
+        },
+        {
+          "ingrediente": "azeite",
+          "qtdPorPorcao": 6.5
+        },
+        {
+          "ingrediente": "paprica-doce",
+          "qtdPorPorcao": 1.75
+        },
+        {
+          "ingrediente": "alho-po",
+          "qtdPorPorcao": 0.75
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": 1.5
+        },
+        {
+          "ingrediente": "limao",
+          "qtdPorPorcao": 0.25
+        }
+      ],
+      "ingredientesTexto": [
+        "800 g de peito ou sobrecoxa sem pele",
+        "2 colheres (sopa) de azeite",
+        "1 colher (sopa) de páprica doce",
+        "1 colher (chá) de alho em pó e 1 de sal",
+        "Suco de 1 limão"
+      ],
+      "passos": [
+        "Misture azeite, páprica, alho, sal e limão e passe no frango; deixe 15 minutos.",
+        "Asse a 200 °C por 30 a 35 minutos, virando uma vez, até chegar a 75 °C no centro.",
+        "Descanse 5 minutos, fatie e esfrie antes de guardar."
+      ],
+      "vira": "Bowl, recheio de wrap, salada ou frango desfiado para sanduíche."
+    },
+    {
+      "id": "almondegas-assadas",
+      "nome": "Almôndegas assadas",
+      "categoria": "proteinas",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 8,
+      "descricaoPorcao": "3 almôndegas",
+      "rendimentoOriginal": "24 unidades",
+      "tempo": "35 min",
+      "conservacao": {
+        "Geladeira": "3 a 4 dias",
+        "Freezer": "3 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "carne-moida",
+          "qtdPorPorcao": 62.5
+        },
+        {
+          "ingrediente": "ovo",
+          "qtdPorPorcao": 0.125
+        },
+        {
+          "ingrediente": "aveia",
+          "qtdPorPorcao": 2.5
+        },
+        {
+          "ingrediente": "cebola",
+          "qtdPorPorcao": 12.5
+        },
+        {
+          "ingrediente": "alho",
+          "qtdPorPorcao": 1.25
+        },
+        {
+          "ingrediente": "salsinha",
+          "qtdPorPorcao": 0.5
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        },
+        {
+          "ingrediente": "pimenta",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "500 g de carne moída magra",
+        "1 ovo e ¼ de xícara de aveia em flocos finos",
+        "1 cebola pequena ralada e 2 dentes de alho",
+        "Salsinha, sal e pimenta"
+      ],
+      "passos": [
+        "Misture tudo e modele bolinhas de 3 cm.",
+        "Asse a 200 °C por 18 a 20 minutos, virando na metade.",
+        "Para congelar, deixe 1 hora em bandeja e depois passe para o saco."
+      ],
+      "vira": "Macarrão com molho de tomate, marmita com arroz e legumes, pão sírio."
+    },
+    {
+      "id": "ovos-cozidos",
+      "nome": "Ovos cozidos",
+      "categoria": "proteinas",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 6,
+      "descricaoPorcao": "2 ovos",
+      "rendimentoOriginal": "6 a 12 ovos",
+      "tempo": "12 min",
+      "conservacao": {
+        "Geladeira": "5 dias com casca"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "ovo",
+          "qtdPorPorcao": 2.0
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "6 a 12 ovos",
+        "Água e uma pitada de sal"
+      ],
+      "passos": [
+        "Coloque os ovos em água fria e leve ao fogo até ferver.",
+        "Conte 9 minutos para gema firme.",
+        "Passe para água gelada por 5 minutos e guarde com casca."
+      ],
+      "vira": "Lanche com sal e pimenta, salada, pasta de ovo, topping de bowl."
+    },
+    {
+      "id": "arroz-integral",
+      "nome": "Arroz integral",
+      "categoria": "bases-graos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 6,
+      "descricaoPorcao": "1 xícara cozida",
+      "rendimentoOriginal": "6 porções",
+      "tempo": "40 min",
+      "conservacao": {
+        "Geladeira": "4 dias",
+        "Freezer": "2 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "arroz-integral",
+          "qtdPorPorcao": 60.0
+        },
+        {
+          "ingrediente": "azeite",
+          "qtdPorPorcao": 2.1667
+        },
+        {
+          "ingrediente": "alho",
+          "qtdPorPorcao": 0.8333
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "2 xícaras de arroz integral",
+        "4 ½ xícaras de água quente",
+        "1 colher (sopa) de azeite, 1 dente de alho e sal"
+      ],
+      "passos": [
+        "Refogue o alho no azeite e mexa o arroz por 1 minuto.",
+        "Junte a água e o sal, tampe e cozinhe em fogo baixo por 30 a 35 minutos.",
+        "Descanse 10 minutos tampado, solte com garfo e esfrie antes de guardar."
+      ],
+      "vira": "Bowl, arroz com ovo, bolinho de arroz assado."
+    },
+    {
+      "id": "batata-doce-assada",
+      "nome": "Batata-doce assada",
+      "categoria": "bases-graos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 4,
+      "descricaoPorcao": "250 g de batata-doce",
+      "rendimentoOriginal": "4 porções",
+      "tempo": "45 min",
+      "conservacao": {
+        "Geladeira": "4 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "batata-doce",
+          "qtdPorPorcao": 250.0
+        },
+        {
+          "ingrediente": "azeite",
+          "qtdPorPorcao": 3.25
+        },
+        {
+          "ingrediente": "paprica-doce",
+          "qtdPorPorcao": 0.625
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "1 kg de batata-doce em cubos",
+        "1 colher (sopa) de azeite",
+        "Sal e alecrim ou páprica"
+      ],
+      "passos": [
+        "Misture a batata com azeite e temperos.",
+        "Asse a 210 °C por 35 a 40 minutos, virando na metade.",
+        "Esfrie e guarde em pote fechado."
+      ],
+      "vira": "Acompanhamento do frango, recheio de wrap, base de bowl."
+    },
+    {
+      "id": "legumes-assados",
+      "nome": "Legumes assados",
+      "categoria": "legumes",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 4,
+      "descricaoPorcao": "1 prato de legumes",
+      "rendimentoOriginal": "4 porções",
+      "tempo": "40 min",
+      "conservacao": {
+        "Geladeira": "4 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "brocolis",
+          "qtdPorPorcao": 75.0
+        },
+        {
+          "ingrediente": "cenoura",
+          "qtdPorPorcao": 50.0
+        },
+        {
+          "ingrediente": "abobrinha",
+          "qtdPorPorcao": 100.0
+        },
+        {
+          "ingrediente": "cebola-roxa",
+          "qtdPorPorcao": 37.5
+        },
+        {
+          "ingrediente": "azeite",
+          "qtdPorPorcao": 6.5
+        },
+        {
+          "ingrediente": "oregano",
+          "qtdPorPorcao": 0.25
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        },
+        {
+          "ingrediente": "pimenta",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "1 brócolis pequeno, 2 cenouras, 2 abobrinhas e 1 cebola roxa",
+        "2 colheres (sopa) de azeite",
+        "Sal, pimenta e orégano"
+      ],
+      "passos": [
+        "Misture tudo em uma assadeira, sem amontoar.",
+        "Asse a 210 °C por 25 a 30 minutos, mexendo na metade.",
+        "Esfrie e guarde em pote fechado."
+      ],
+      "vira": "Acompanhamento, omelete, base de bowl, sopa batida."
+    },
+    {
+      "id": "sopa-de-legumes-com-feijao-branco",
+      "nome": "Sopa de legumes com feijão branco",
+      "categoria": "legumes",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 6,
+      "descricaoPorcao": "1 prato fundo",
+      "rendimentoOriginal": "6 porções",
+      "tempo": "40 min",
+      "conservacao": {
+        "Geladeira": "4 dias",
+        "Freezer": "3 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "cebola",
+          "qtdPorPorcao": 25.0
+        },
+        {
+          "ingrediente": "alho",
+          "qtdPorPorcao": 1.6667
+        },
+        {
+          "ingrediente": "cenoura",
+          "qtdPorPorcao": 33.3333
+        },
+        {
+          "ingrediente": "batata",
+          "qtdPorPorcao": 50.0
+        },
+        {
+          "ingrediente": "abobrinha",
+          "qtdPorPorcao": 33.3333
+        },
+        {
+          "ingrediente": "couve",
+          "qtdPorPorcao": 16.6667
+        },
+        {
+          "ingrediente": "feijao-branco",
+          "qtdPorPorcao": 0.1667
+        },
+        {
+          "ingrediente": "azeite",
+          "qtdPorPorcao": 2.1667
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "1 cebola, 2 dentes de alho, 2 cenouras, 2 batatas, 1 abobrinha",
+        "2 xícaras de couve picada",
+        "1 lata de feijão branco escorrido",
+        "1,5 L de água ou caldo caseiro, azeite e sal"
+      ],
+      "passos": [
+        "Refogue cebola e alho; junte cenoura e batata e cubra com a água.",
+        "Cozinhe 20 minutos, junte abobrinha e feijão e cozinhe mais 10.",
+        "Acrescente a couve nos últimos 3 minutos e acerte o sal.",
+        "Congele em potes de 2 porções, deixando 2 cm livres."
+      ],
+      "vira": "Jantar leve com ovo cozido, ou batida com torradas."
+    },
+    {
+      "id": "molho-de-iogurte-e-ervas",
+      "nome": "Molho de iogurte e ervas",
+      "categoria": "molhos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 8,
+      "descricaoPorcao": "2 colheres de sopa",
+      "rendimentoOriginal": "1 xícara",
+      "tempo": "5 min",
+      "conservacao": {
+        "Geladeira": "5 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "iogurte",
+          "qtdPorPorcao": 22.5
+        },
+        {
+          "ingrediente": "limao",
+          "qtdPorPorcao": 0.0625
+        },
+        {
+          "ingrediente": "alho",
+          "qtdPorPorcao": 0.625
+        },
+        {
+          "ingrediente": "hortela",
+          "qtdPorPorcao": 0.75
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        },
+        {
+          "ingrediente": "pimenta",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "¾ de xícara de iogurte natural integral",
+        "Suco de ½ limão e 1 dente de alho ralado",
+        "2 colheres (sopa) de hortelã ou salsinha",
+        "Sal e pimenta"
+      ],
+      "passos": [
+        "Misture tudo em um pote e prove.",
+        "Ajuste o limão e o sal e guarde fechado."
+      ],
+      "vira": "Molho de salada, wraps, legumes assados e frango."
+    },
+    {
+      "id": "molho-de-tahine-e-limao",
+      "nome": "Molho de tahine e limão",
+      "categoria": "molhos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 4,
+      "descricaoPorcao": "2 colheres de sopa",
+      "rendimentoOriginal": "½ xícara",
+      "tempo": "5 min",
+      "conservacao": {
+        "Geladeira": "7 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "tahine",
+          "qtdPorPorcao": 11.25
+        },
+        {
+          "ingrediente": "limao",
+          "qtdPorPorcao": 0.25
+        },
+        {
+          "ingrediente": "alho",
+          "qtdPorPorcao": 1.25
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "3 colheres (sopa) de tahine",
+        "Suco de 1 limão e 1 dente de alho",
+        "3 a 4 colheres (sopa) de água e sal"
+      ],
+      "passos": [
+        "Misture tahine, limão e alho.",
+        "Acrescente água aos poucos até ficar cremoso e acerte o sal."
+      ],
+      "vira": "Bowls, legumes assados, falafel assado."
+    },
+    {
+      "id": "overnight-oats",
+      "nome": "Overnight oats",
+      "categoria": "lanches",
+      "tags": [
+        "cafe-da-manha"
+      ],
+      "foto": null,
+      "porcoesPadrao": 2,
+      "descricaoPorcao": "1 pote",
+      "rendimentoOriginal": "2 porções",
+      "tempo": "5 min + 6 h",
+      "conservacao": {
+        "Geladeira": "3 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "aveia",
+          "qtdPorPorcao": 40.0
+        },
+        {
+          "ingrediente": "leite",
+          "qtdPorPorcao": 120.0
+        },
+        {
+          "ingrediente": "iogurte",
+          "qtdPorPorcao": 60.0
+        },
+        {
+          "ingrediente": "chia",
+          "qtdPorPorcao": 6.0
+        },
+        {
+          "ingrediente": "fruta",
+          "qtdPorPorcao": 50.0
+        }
+      ],
+      "ingredientesTexto": [
+        "1 xícara de aveia em flocos",
+        "1 xícara de leite e ½ xícara de iogurte natural",
+        "1 colher (sopa) de chia",
+        "Fruta picada para finalizar"
+      ],
+      "passos": [
+        "Misture tudo, menos a fruta, e divida em 2 potes.",
+        "Deixe na geladeira por pelo menos 6 horas.",
+        "Na hora de comer, coloque a fruta por cima."
+      ],
+      "vira": "Versão com cacau e banana, com maçã e canela, ou com manga e coco."
+    },
+    {
+      "id": "muffin-de-ovo-com-legumes",
+      "nome": "Muffin de ovo com legumes",
+      "categoria": "lanches",
+      "tags": [
+        "cafe-da-manha"
+      ],
+      "foto": null,
+      "porcoesPadrao": 6,
+      "descricaoPorcao": "2 muffins",
+      "rendimentoOriginal": "12 unidades",
+      "tempo": "30 min",
+      "conservacao": {
+        "Geladeira": "4 dias",
+        "Freezer": "2 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "ovo",
+          "qtdPorPorcao": 1.3333
+        },
+        {
+          "ingrediente": "espinafre",
+          "qtdPorPorcao": 5.0
+        },
+        {
+          "ingrediente": "tomate",
+          "qtdPorPorcao": 12.5
+        },
+        {
+          "ingrediente": "queijo-ralado",
+          "qtdPorPorcao": 8.3333
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        },
+        {
+          "ingrediente": "pimenta",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "8 ovos",
+        "1 xícara de espinafre picado e ½ de tomate em cubos",
+        "½ xícara de queijo ralado",
+        "Sal e pimenta"
+      ],
+      "passos": [
+        "Bata os ovos com sal e pimenta; distribua legumes e queijo em forminhas untadas.",
+        "Cubra com os ovos e asse a 180 °C por 18 a 20 minutos.",
+        "Esquente 40 segundos no micro-ondas (1 min e meio se congelado)."
+      ],
+      "vira": "Café da manhã rápido, recheio de pão, lanche da tarde."
+    },
+    {
+      "id": "homus-de-grao-de-bico",
+      "nome": "Homus de grão-de-bico",
+      "categoria": "lanches",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 6,
+      "descricaoPorcao": "¼ de xícara",
+      "rendimentoOriginal": "1 ½ xícara",
+      "tempo": "10 min",
+      "conservacao": {
+        "Geladeira": "5 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "grao-de-bico",
+          "qtdPorPorcao": 40.0
+        },
+        {
+          "ingrediente": "tahine",
+          "qtdPorPorcao": 5.0
+        },
+        {
+          "ingrediente": "limao",
+          "qtdPorPorcao": 0.1667
+        },
+        {
+          "ingrediente": "alho",
+          "qtdPorPorcao": 0.8333
+        },
+        {
+          "ingrediente": "cominho",
+          "qtdPorPorcao": 0.3333
+        },
+        {
+          "ingrediente": "azeite",
+          "qtdPorPorcao": 6.5
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "1 ½ xícara de grão-de-bico cozido",
+        "2 colheres (sopa) de tahine e suco de 1 limão",
+        "1 dente de alho, cominho e sal",
+        "3 colheres (sopa) de azeite e 3 de água gelada"
+      ],
+      "passos": [
+        "Bata tudo no processador por 2 a 3 minutos, juntando água até ficar cremoso.",
+        "Guarde em pote com um fio de azeite por cima."
+      ],
+      "vira": "Pasta para palitos de legumes, recheio de wrap, base de sanduíche."
+    },
+    {
+      "id": "bolinho-de-banana-e-aveia",
+      "nome": "Bolinho de banana e aveia",
+      "categoria": "lanches",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 6,
+      "descricaoPorcao": "2 bolinhos",
+      "rendimentoOriginal": "12 unidades",
+      "tempo": "30 min",
+      "conservacao": {
+        "Pote": "3 dias",
+        "Freezer": "2 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "banana",
+          "qtdPorPorcao": 0.5
+        },
+        {
+          "ingrediente": "aveia",
+          "qtdPorPorcao": 20.0
+        },
+        {
+          "ingrediente": "ovo",
+          "qtdPorPorcao": 0.1667
+        },
+        {
+          "ingrediente": "uvas-passas",
+          "qtdPorPorcao": 6.6667
+        },
+        {
+          "ingrediente": "canela",
+          "qtdPorPorcao": 0.4167
+        }
+      ],
+      "ingredientesTexto": [
+        "3 bananas maduras amassadas",
+        "1 ½ xícara de aveia em flocos e 1 ovo",
+        "¼ de xícara de uvas-passas ou chocolate amargo",
+        "1 colher (chá) de canela"
+      ],
+      "passos": [
+        "Misture tudo e faça montinhos em assadeira forrada.",
+        "Asse a 180 °C por 18 a 20 minutos, até dourar.",
+        "Esfrie sobre grade e guarde."
+      ],
+      "vira": "Lanche da tarde ou café da manhã rápido."
+    },
+    {
+      "id": "kit-de-smoothie-verde",
+      "nome": "Kit de smoothie verde",
+      "categoria": "sucos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 4,
+      "descricaoPorcao": "1 kit",
+      "rendimentoOriginal": "4 kits",
+      "tempo": "10 min",
+      "conservacao": {
+        "Freezer": "3 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "banana",
+          "qtdPorPorcao": 0.5
+        },
+        {
+          "ingrediente": "manga",
+          "qtdPorPorcao": 80.0
+        },
+        {
+          "ingrediente": "espinafre",
+          "qtdPorPorcao": 30.0
+        },
+        {
+          "ingrediente": "aveia",
+          "qtdPorPorcao": 10.0
+        }
+      ],
+      "ingredientesTexto": [
+        "Por kit: ½ banana em rodelas e ½ xícara de manga",
+        "1 punhado de espinafre ou couve",
+        "1 colher (sopa) de aveia ou chia"
+      ],
+      "passos": [
+        "Monte cada kit em um saco, deixando o ar sair, e congele deitado.",
+        "Na hora, bata um kit com 1 xícara de água de coco, leite ou iogurte."
+      ],
+      "vira": "Lanche da tarde ou café da manhã rápido."
+    },
+    {
+      "id": "cha-gelado-de-hibisco",
+      "nome": "Chá gelado de hibisco",
+      "categoria": "sucos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 4,
+      "descricaoPorcao": "250 ml",
+      "rendimentoOriginal": "1 L",
+      "tempo": "10 min",
+      "conservacao": {
+        "Geladeira": "4 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "hibisco",
+          "qtdPorPorcao": 2.0
+        },
+        {
+          "ingrediente": "limao",
+          "qtdPorPorcao": 0.25
+        }
+      ],
+      "ingredientesTexto": [
+        "2 colheres (sopa) de flor de hibisco seca",
+        "1 L de água quente",
+        "Rodelas de limão, gengibre ou canela em pau"
+      ],
+      "passos": [
+        "Deixe o hibisco em infusão por 10 minutos e coe.",
+        "Esfrie, junte o limão e guarde na geladeira."
+      ],
+      "vira": "Bebida do dia ou base para drinks sem álcool com água com gás."
+    },
+    {
+      "id": "carne-moida-refogada-com-legumes",
+      "nome": "Carne moída refogada com legumes",
+      "categoria": "proteinas",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 4,
+      "descricaoPorcao": "1 prato",
+      "rendimentoOriginal": "4 porções",
+      "tempo": "25 min",
+      "conservacao": {
+        "Geladeira": "3 a 4 dias",
+        "Freezer": "3 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "carne-moida",
+          "qtdPorPorcao": 125.0
+        },
+        {
+          "ingrediente": "cebola",
+          "qtdPorPorcao": 37.5
+        },
+        {
+          "ingrediente": "alho",
+          "qtdPorPorcao": 2.5
+        },
+        {
+          "ingrediente": "cenoura",
+          "qtdPorPorcao": 25.0
+        },
+        {
+          "ingrediente": "abobrinha",
+          "qtdPorPorcao": 50.0
+        },
+        {
+          "ingrediente": "azeite",
+          "qtdPorPorcao": 3.25
+        },
+        {
+          "ingrediente": "extrato-tomate",
+          "qtdPorPorcao": 5.0
+        },
+        {
+          "ingrediente": "cominho",
+          "qtdPorPorcao": 0.5
+        },
+        {
+          "ingrediente": "salsinha",
+          "qtdPorPorcao": 1.0
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "500 g de carne moída magra",
+        "1 cebola, 2 dentes de alho, 1 cenoura ralada e 1 abobrinha bem miúda",
+        "1 colher (sopa) de azeite e 1 de extrato de tomate",
+        "Sal, cominho e salsinha"
+      ],
+      "passos": [
+        "Refogue cebola e alho no azeite; junte a carne e mexa até dourar bem, sem tampar.",
+        "Acrescente cenoura, abobrinha, extrato de tomate e temperos e cozinhe mais 8 minutos.",
+        "Esfrie e porcione em potes."
+      ],
+      "vira": "Recheio de panqueca, tapioca ou batata-doce; macarrão ou arroz com ovo."
+    },
+    {
+      "id": "grao-de-bico-crocante",
+      "nome": "Grão-de-bico crocante",
+      "categoria": "proteinas",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 4,
+      "descricaoPorcao": "1 punhado",
+      "rendimentoOriginal": "4 porções de lanche",
+      "tempo": "35 min",
+      "conservacao": {
+        "Pote fechado": "3 a 4 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "grao-de-bico",
+          "qtdPorPorcao": 80.0
+        },
+        {
+          "ingrediente": "azeite",
+          "qtdPorPorcao": 3.25
+        },
+        {
+          "ingrediente": "paprica-defumada",
+          "qtdPorPorcao": 0.625
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "2 xícaras de grão-de-bico cozido e bem seco",
+        "1 colher (sopa) de azeite",
+        "1 colher (chá) de páprica defumada e sal"
+      ],
+      "passos": [
+        "Seque bem o grão-de-bico com papel toalha.",
+        "Misture com azeite e temperos e asse a 200 °C por 25 a 30 minutos, sacudindo a assadeira na metade.",
+        "Deixe esfriar fora do forno antes de fechar o pote, senão perde a crocância."
+      ],
+      "vira": "Petisco, topping de salada ou sopa."
+    },
+    {
+      "id": "quinoa",
+      "nome": "Quinoa",
+      "categoria": "bases-graos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 6,
+      "descricaoPorcao": "½ xícara cozida",
+      "rendimentoOriginal": "6 porções",
+      "tempo": "20 min",
+      "conservacao": {
+        "Geladeira": "4 a 5 dias",
+        "Freezer": "2 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "quinoa",
+          "qtdPorPorcao": 28.3333
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "1 xícara de quinoa",
+        "2 xícaras de água e uma pitada de sal"
+      ],
+      "passos": [
+        "Lave a quinoa em peneira fina até a água sair clara.",
+        "Cozinhe tampada por 12 a 15 minutos, até aparecer o anel claro.",
+        "Desligue, tampe por 5 minutos, solte com garfo e esfrie."
+      ],
+      "vira": "Salada fria, bowl, mingau salgado, mistura para hambúrguer vegetal."
+    },
+    {
+      "id": "feijao-cozido-e-porcionado",
+      "nome": "Feijão cozido e porcionado",
+      "categoria": "bases-graos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 8,
+      "descricaoPorcao": "1 concha",
+      "rendimentoOriginal": "8 porções",
+      "tempo": "50 min + molho",
+      "conservacao": {
+        "Geladeira": "4 dias",
+        "Freezer": "3 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "feijao",
+          "qtdPorPorcao": 62.5
+        },
+        {
+          "ingrediente": "cebola",
+          "qtdPorPorcao": 18.75
+        },
+        {
+          "ingrediente": "alho",
+          "qtdPorPorcao": 1.875
+        },
+        {
+          "ingrediente": "louro",
+          "qtdPorPorcao": 0.25
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "500 g de feijão seco",
+        "1 cebola, 3 dentes de alho e 2 folhas de louro",
+        "Sal"
+      ],
+      "passos": [
+        "Deixe o feijão de molho por 8 horas, escorra e troque a água.",
+        "Cozinhe na panela de pressão por 25 minutos após pegar pressão, com louro.",
+        "Refogue cebola e alho à parte e junte ao feijão com o sal; apure por 10 minutos.",
+        "Congele em porções de 2 pessoas, com o caldo cobrindo o feijão."
+      ],
+      "vira": "Feijão com arroz, sopa de feijão, pasta de feijão para tortilla."
+    },
+    {
+      "id": "folhas-lavadas-e-secas",
+      "nome": "Folhas lavadas e secas",
+      "categoria": "legumes",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 5,
+      "descricaoPorcao": "1 prato de salada",
+      "rendimentoOriginal": "4 a 5 dias de salada",
+      "tempo": "15 min",
+      "conservacao": {
+        "Geladeira": "5 a 6 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "alface",
+          "qtdPorPorcao": 50.0
+        },
+        {
+          "ingrediente": "couve",
+          "qtdPorPorcao": 60.0
+        }
+      ],
+      "ingredientesTexto": [
+        "1 maço de alface ou rúcula e 1 maço de couve ou espinafre",
+        "Papel toalha e pote grande com tampa"
+      ],
+      "passos": [
+        "Lave as folhas em água com vinagre (1 colher de sopa por litro) por 10 minutos e enxágue.",
+        "Seque bem na centrífuga ou com pano limpo.",
+        "Forre o pote com papel toalha, coloque as folhas e feche. Troque o papel se umedecer."
+      ],
+      "vira": "Salada em 2 minutos, base de wrap, folha para refogar."
+    },
+    {
+      "id": "legumes-refogados-rapidos",
+      "nome": "Legumes refogados rápidos",
+      "categoria": "legumes",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 4,
+      "descricaoPorcao": "1 prato",
+      "rendimentoOriginal": "4 porções",
+      "tempo": "15 min",
+      "conservacao": {
+        "Geladeira": "3 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "abobrinha",
+          "qtdPorPorcao": 50.0
+        },
+        {
+          "ingrediente": "cenoura",
+          "qtdPorPorcao": 25.0
+        },
+        {
+          "ingrediente": "pimentao",
+          "qtdPorPorcao": 37.5
+        },
+        {
+          "ingrediente": "alho",
+          "qtdPorPorcao": 1.25
+        },
+        {
+          "ingrediente": "azeite",
+          "qtdPorPorcao": 3.25
+        },
+        {
+          "ingrediente": "salsinha",
+          "qtdPorPorcao": 1.0
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "1 abobrinha, 1 cenoura e 1 pimentão em tiras",
+        "1 dente de alho e 1 colher (sopa) de azeite",
+        "Sal e salsinha"
+      ],
+      "passos": [
+        "Aqueça o azeite com o alho em fogo médio-alto.",
+        "Junte a cenoura por 3 minutos, depois a abobrinha e o pimentão por mais 4, mantendo firmes.",
+        "Finalize com salsinha e esfrie."
+      ],
+      "vira": "Recheio de wrap, acompanhamento, omelete."
+    },
+    {
+      "id": "vinagrete-classico",
+      "nome": "Vinagrete clássico",
+      "categoria": "molhos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 8,
+      "descricaoPorcao": "2 colheres de sopa",
+      "rendimentoOriginal": "1 xícara",
+      "tempo": "10 min",
+      "conservacao": {
+        "Geladeira": "3 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "tomate",
+          "qtdPorPorcao": 15.0
+        },
+        {
+          "ingrediente": "cebola",
+          "qtdPorPorcao": 12.5
+        },
+        {
+          "ingrediente": "pimentao",
+          "qtdPorPorcao": 9.375
+        },
+        {
+          "ingrediente": "azeite",
+          "qtdPorPorcao": 4.875
+        },
+        {
+          "ingrediente": "vinagre",
+          "qtdPorPorcao": 3.75
+        },
+        {
+          "ingrediente": "salsinha",
+          "qtdPorPorcao": 0.5
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "1 tomate, 1 cebola pequena e ½ pimentão em cubos miúdos",
+        "3 colheres (sopa) de azeite e 2 de vinagre",
+        "Sal e salsinha"
+      ],
+      "passos": [
+        "Misture tudo e deixe repousar 10 minutos antes de servir."
+      ],
+      "vira": "Acompanhamento de carnes, topping de ovos, recheio de wrap."
+    },
+    {
+      "id": "tempero-de-frango-pronto",
+      "nome": "Tempero de frango pronto",
+      "categoria": "molhos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 8,
+      "descricaoPorcao": "1 uso (1 colher de sopa)",
+      "rendimentoOriginal": "cerca de 8 usos",
+      "tempo": "3 min",
+      "conservacao": {
+        "Pote fechado": "3 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "paprica-doce",
+          "qtdPorPorcao": 1.75
+        },
+        {
+          "ingrediente": "cominho",
+          "qtdPorPorcao": 0.875
+        },
+        {
+          "ingrediente": "alho-po",
+          "qtdPorPorcao": 1.125
+        },
+        {
+          "ingrediente": "cebola-po",
+          "qtdPorPorcao": 1.0
+        },
+        {
+          "ingrediente": "oregano",
+          "qtdPorPorcao": 0.375
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": 2.25
+        },
+        {
+          "ingrediente": "pimenta",
+          "qtdPorPorcao": 0.25
+        }
+      ],
+      "ingredientesTexto": [
+        "2 colheres (sopa) de páprica doce",
+        "1 colher (sopa) de cominho, 1 de alho em pó, 1 de cebola em pó e 1 de orégano",
+        "1 colher (sopa) de sal e 1 colher (chá) de pimenta"
+      ],
+      "passos": [
+        "Misture tudo e guarde em pote seco.",
+        "Use 1 colher (sopa) a cada 400 g de proteína, com um fio de azeite e limão."
+      ],
+      "vira": "Frango, carne, legumes assados e batata-doce."
+    },
+    {
+      "id": "panqueca-de-banana-e-aveia",
+      "nome": "Panqueca de banana e aveia",
+      "categoria": "lanches",
+      "tags": [
+        "cafe-da-manha"
+      ],
+      "foto": null,
+      "porcoesPadrao": 4,
+      "descricaoPorcao": "2 panquecas",
+      "rendimentoOriginal": "8 panquecas",
+      "tempo": "20 min",
+      "conservacao": {
+        "Geladeira": "3 dias",
+        "Freezer": "2 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "banana",
+          "qtdPorPorcao": 0.5
+        },
+        {
+          "ingrediente": "ovo",
+          "qtdPorPorcao": 0.5
+        },
+        {
+          "ingrediente": "aveia",
+          "qtdPorPorcao": 10.0
+        },
+        {
+          "ingrediente": "canela",
+          "qtdPorPorcao": 0.625
+        },
+        {
+          "ingrediente": "fermento",
+          "qtdPorPorcao": 1.0
+        },
+        {
+          "ingrediente": "oleo-coco",
+          "qtdPorPorcao": 3.25
+        }
+      ],
+      "ingredientesTexto": [
+        "2 bananas maduras amassadas",
+        "2 ovos e ½ xícara de aveia em flocos",
+        "1 colher (chá) de canela e 1 de fermento",
+        "Um fio de óleo de coco ou manteiga"
+      ],
+      "passos": [
+        "Misture tudo e deixe descansar 5 minutos.",
+        "Cozinhe em frigideira antiaderente, em fogo médio-baixo, 2 minutos de cada lado.",
+        "Esfrie, separe com papel manteiga e congele em saco."
+      ],
+      "vira": "Café da manhã com pasta de amendoim e fruta; descongele na torradeira."
+    },
+    {
+      "id": "granola-caseira",
+      "nome": "Granola caseira",
+      "categoria": "lanches",
+      "tags": [
+        "cafe-da-manha"
+      ],
+      "foto": null,
+      "porcoesPadrao": 10,
+      "descricaoPorcao": "40 g (¼ de xícara)",
+      "rendimentoOriginal": "4 xícaras",
+      "tempo": "35 min",
+      "conservacao": {
+        "Pote fechado": "3 semanas"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "aveia",
+          "qtdPorPorcao": 24.0
+        },
+        {
+          "ingrediente": "castanhas",
+          "qtdPorPorcao": 7.0
+        },
+        {
+          "ingrediente": "mel",
+          "qtdPorPorcao": 6.3
+        },
+        {
+          "ingrediente": "oleo-coco",
+          "qtdPorPorcao": 3.9
+        },
+        {
+          "ingrediente": "canela",
+          "qtdPorPorcao": 0.25
+        },
+        {
+          "ingrediente": "sal",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "3 xícaras de aveia em flocos grossos",
+        "½ xícara de castanhas e sementes picadas",
+        "3 colheres (sopa) de mel e 3 de óleo de coco derretido",
+        "1 colher (chá) de canela e pitada de sal"
+      ],
+      "passos": [
+        "Misture os secos e depois o mel e o óleo, até envolver tudo.",
+        "Asse a 160 °C por 25 minutos, mexendo na metade.",
+        "Deixe esfriar completamente antes de guardar."
+      ],
+      "vira": "Iogurte com fruta, cobertura de overnight oats, lanche em punhado."
+    },
+    {
+      "id": "pasta-de-atum-e-iogurte",
+      "nome": "Pasta de atum e iogurte",
+      "categoria": "lanches",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 4,
+      "descricaoPorcao": "1 porção de pasta",
+      "rendimentoOriginal": "4 porções",
+      "tempo": "5 min",
+      "conservacao": {
+        "Geladeira": "3 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "atum",
+          "qtdPorPorcao": 0.5
+        },
+        {
+          "ingrediente": "iogurte",
+          "qtdPorPorcao": 30.0
+        },
+        {
+          "ingrediente": "mostarda",
+          "qtdPorPorcao": 3.75
+        },
+        {
+          "ingrediente": "cenoura",
+          "qtdPorPorcao": 12.5
+        },
+        {
+          "ingrediente": "cebolinha",
+          "qtdPorPorcao": 1.0
+        },
+        {
+          "ingrediente": "limao",
+          "qtdPorPorcao": 0.125
+        },
+        {
+          "ingrediente": "pimenta",
+          "qtdPorPorcao": null,
+          "aGosto": true
+        }
+      ],
+      "ingredientesTexto": [
+        "2 latas de atum em água, escorridas",
+        "½ xícara de iogurte natural e 1 colher (sopa) de mostarda",
+        "Cenoura ralada, cebolinha, suco de ½ limão e pimenta"
+      ],
+      "passos": [
+        "Misture tudo com um garfo e ajuste o limão e o sal.",
+        "Guarde em pote fechado."
+      ],
+      "vira": "Sanduíche, tapioca, wrap ou recheio de tomate."
+    },
+    {
+      "id": "tapioca-recheada-pronta",
+      "nome": "Tapioca recheada pronta",
+      "categoria": "lanches",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 1,
+      "descricaoPorcao": "1 tapioca",
+      "rendimentoOriginal": "1 porção",
+      "tempo": "5 min na hora",
+      "conservacao": {},
+      "ingredientes": [
+        {
+          "ingrediente": "goma-tapioca",
+          "qtdPorPorcao": 60.0
+        }
+      ],
+      "ingredientesTexto": [
+        "3 colheres (sopa) de goma de tapioca",
+        "Recheio pronto: frango desfiado, pasta de atum, ovo mexido ou queijo"
+      ],
+      "passos": [
+        "Espalhe a goma em frigideira antiaderente quente por 1 a 2 minutos, até unir.",
+        "Recheie com o preparo pronto, dobre e sirva."
+      ],
+      "vira": "Café da manhã, lanche ou jantar leve."
+    },
+    {
+      "id": "cubos-de-suco-concentrado",
+      "nome": "Cubos de suco concentrado",
+      "categoria": "sucos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 6,
+      "descricaoPorcao": "4 cubos",
+      "rendimentoOriginal": "2 formas de gelo",
+      "tempo": "15 min",
+      "conservacao": {
+        "Freezer": "2 meses"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "laranja",
+          "qtdPorPorcao": 1.0
+        }
+      ],
+      "ingredientesTexto": [
+        "6 laranjas espremidas ou 1 abacaxi batido com hortelã",
+        "Formas de gelo"
+      ],
+      "passos": [
+        "Esprema ou bata a fruta e coe se quiser.",
+        "Distribua nas formas e congele.",
+        "Para servir, coloque 3 a 4 cubos em um copo e complete com água."
+      ],
+      "vira": "Suco rápido, gelo saborizado para água com gás."
+    },
+    {
+      "id": "agua-saborizada",
+      "nome": "Água saborizada",
+      "categoria": "sucos",
+      "tags": [],
+      "foto": null,
+      "porcoesPadrao": 6,
+      "descricaoPorcao": "250 ml",
+      "rendimentoOriginal": "1,5 L",
+      "tempo": "5 min",
+      "conservacao": {
+        "Geladeira": "3 dias"
+      },
+      "ingredientes": [
+        {
+          "ingrediente": "pepino",
+          "qtdPorPorcao": 16.6667
+        },
+        {
+          "ingrediente": "limao",
+          "qtdPorPorcao": 0.1667
+        },
+        {
+          "ingrediente": "hortela",
+          "qtdPorPorcao": 0.5
+        }
+      ],
+      "ingredientesTexto": [
+        "1,5 L de água",
+        "Opção 1: rodelas de pepino, limão e folhas de hortelã",
+        "Opção 2: fatias de laranja e gengibre"
+      ],
+      "passos": [
+        "Coloque os ingredientes em uma jarra com a água e leve à geladeira por pelo menos 1 hora.",
+        "Complete com água e gelo durante o dia."
+      ],
+      "vira": "Alternativa ao refrigerante, base para chás gelados."
+    }
+  ]
+}

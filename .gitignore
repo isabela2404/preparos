@@ -1,0 +1,8 @@
+node_modules/
+dist/
+dev-dist/
+.DS_Store
+*.local
+
+# Versão em PDF da especificação: cita nomes reais, fica só local.
+docs/*.pdf
