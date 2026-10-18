@@ -1,17 +1,14 @@
-import { useState } from 'preact/hooks';
 import { Check, Plus } from 'lucide-preact';
 import { IconeCategoria } from '../componentes/CapaReceita.jsx';
 import { ChipsCategoria } from '../componentes/ChipsCategoria.jsx';
-import { Confirmacao } from '../componentes/Confirmacao.jsx';
+import { BotaoZerar } from '../componentes/BotaoZerar.jsx';
 import { ContadorPorcoes } from '../componentes/ContadorPorcoes.jsx';
 import { TopoTitulo } from '../componentes/TopoTitulo.jsx';
-import { definirPorcoes, zerarPlanejador } from '../dados/repositorio.js';
+import { definirPorcoes } from '../dados/repositorio.js';
 import { CATEGORIA_POR_ID, filtrarPorCategoria } from '../dominio/categorias.js';
 
-// RF-10 a RF-15.
+// RF-10 a RF-14. A lista se recalcula sozinha (RF-15), então não há botão de gerar.
 export function Planejador({ receitas, planejador, status, categoria, aoMudarCategoria }) {
-  const [confirmando, setConfirmando] = useState(false);
-
   const escolhidas = receitas.filter((r) => planejador[r.id] != null);
   const totalPorcoes = escolhidas.reduce((soma, r) => soma + planejador[r.id], 0);
 
@@ -65,31 +62,9 @@ export function Planejador({ receitas, planejador, status, categoria, aoMudarCat
           <strong>{totalPorcoes}</strong> {totalPorcoes === 1 ? 'porção' : 'porções'}
         </p>
         <div class="resumo-acoes">
-          <button
-            type="button"
-            class="botao botao-secundario"
-            disabled={!escolhidas.length}
-            onClick={() => setConfirmando(true)}
-          >
-            Zerar
-          </button>
-          <a class={escolhidas.length ? 'botao' : 'botao desabilitado'} href="#/lista">
-            Gerar lista
-          </a>
+          <BotaoZerar desabilitado={!escolhidas.length} />
         </div>
       </div>
-
-      <Confirmacao
-        aberta={confirmando}
-        titulo="Zerar o planejador?"
-        texto="As receitas escolhidas e as porções serão apagadas, e a lista de compras fica vazia."
-        rotuloConfirmar="Zerar planejador"
-        aoConfirmar={() => {
-          zerarPlanejador();
-          setConfirmando(false);
-        }}
-        aoCancelar={() => setConfirmando(false)}
-      />
     </>
   );
 }

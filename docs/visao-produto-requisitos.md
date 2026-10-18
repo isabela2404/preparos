@@ -86,7 +86,7 @@ Cada requisito tem um código (RF) para facilitar a conversa e os testes. Priori
 | RF-12 | Cada receita selecionada exibe um contador numérico com + e − para as porções desejadas (mínimo 1, valor inicial = rendimento padrão da receita). | M |
 | RF-13 | Exibir um resumo fixo no rodapé: quantas receitas e quantas porções no total. | M |
 | RF-14 | Botão "Zerar planejador" com confirmação antes de apagar. | M |
-| RF-15 | Botão "Gerar lista de compras" que leva à lista já atualizada. A lista também se recalcula sempre que o planejador muda. | M |
+| RF-15 | A lista de compras se recalcula sozinha sempre que o planejador muda; não há botão para gerá-la. | M |
 
 ### 4.3 Lista de Compras
 
@@ -98,7 +98,7 @@ Cada requisito tem um código (RF) para facilitar a conversa e os testes. Priori
 | RF-23 | Cada linha tem caixa de seleção (checkbox); itens marcados ficam riscados e vão para o fim do setor. | M |
 | RF-24 | Mostrar progresso por setor e geral (ex.: 7 de 23 itens). | D |
 | RF-25 | Compartilhar a lista pelo WhatsApp como texto, com setores, itens e quantidades; por padrão só os itens não marcados. | M |
-| RF-26 | Botão "Zerar lista" com confirmação, que limpa as marcações e não apaga o planejador. | M |
+| RF-26 | Botão "Zerar" na lista, com confirmação, igual ao do planejador: apaga receitas, porções e marcações. | M |
 | RF-27 | Permitir adicionar um item avulso à lista (ex.: papel toalha) que não vem de receita. | D |
 | RF-28 | Mostrar de quais receitas vem cada item ao tocar nele. | D |
 
@@ -150,7 +150,7 @@ Medidas caseiras (colher, xícara) entram no catálogo com um fator de conversã
 
 **RN-07 Marcações x recálculo.** Se o planejador mudar depois de marcar itens na lista, as marcações dos itens que continuam na lista são mantidas. Se a quantidade de um item marcado aumentar, o item volta a ficar desmarcado, para não esquecer a diferença. Para isso, cada marcação guarda a quantidade que o item tinha na lista no momento em que foi marcado.
 
-**RN-08 Zerar.** "Zerar planejador" apaga seleções e porções e, como a lista é derivada, esvazia a lista. "Zerar lista" só limpa marcações e itens avulsos.
+**RN-08 Zerar.** O botão "Zerar" faz a mesma coisa no Planejador e na Lista: apaga seleções, porções, marcações e itens avulsos. Como a lista é derivada do planejador, ela fica vazia.
 
 **RN-09 Texto do WhatsApp.** Formato de exemplo:
 
@@ -318,7 +318,7 @@ O app reaproveita a paleta da página visual e da apresentação já criadas: um
 - Linha de lista com caixa de seleção grande, nome, quantidade à direita; riscada quando marcada.
 - Cabeçalho de setor com cor, ícone e contagem de itens restantes.
 - Barra inferior fixa com Caderno, Planejador e Lista, mais selo com o número de itens pendentes na Lista.
-- Botões de ação com confirmação: Zerar planejador, Zerar lista, Compartilhar no WhatsApp (verde próprio do WhatsApp apenas nesse botão).
+- Botões de ação: Zerar, com confirmação, no Planejador e na Lista; Compartilhar no WhatsApp (verde próprio do WhatsApp apenas nesse botão).
 
 **Fotos.** Na versão 1, cada card mostra o ícone da categoria sobre um fundo na cor dela. As fotos entram depois, uma a uma, em WebP de até 100 KB, numa pasta do repositório; a receita aponta para o arquivo no campo foto. As fotos não vão para o banco, porque o armazenamento de arquivos do Firebase pode exigir plano pago (conferir ao criar o projeto).
 

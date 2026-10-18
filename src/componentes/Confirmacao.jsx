@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'preact/hooks';
 
-// RF-14 e RF-26: confirmação antes de apagar.
+// Confirmação antes de apagar (RF-14, RF-26).
 export function Confirmacao({ aberta, titulo, texto, rotuloConfirmar, aoConfirmar, aoCancelar }) {
   const dialogo = useRef(null);
 

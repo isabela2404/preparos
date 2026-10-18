@@ -1,8 +1,7 @@
-import { useState } from 'preact/hooks';
 import { Apple, Archive, Check, ClipboardList, Drumstick, Milk, Package, Share2, Sparkles } from 'lucide-preact';
-import { Confirmacao } from '../componentes/Confirmacao.jsx';
+import { BotaoZerar } from '../componentes/BotaoZerar.jsx';
 import { TopoTitulo } from '../componentes/TopoTitulo.jsx';
-import { definirMarcacao, zerarMarcacoes } from '../dados/repositorio.js';
+import { definirMarcacao } from '../dados/repositorio.js';
 import { quantidadeAoMarcar, textoQuantidade, textoWhatsApp } from '../dominio/lista.js';
 
 const ICONE_SETOR = {
@@ -16,8 +15,6 @@ const ICONE_SETOR = {
 
 // RF-20 a RF-26.
 export function Lista({ grupos, status }) {
-  const [confirmando, setConfirmando] = useState(false);
-
   if (!grupos.length) {
     return (
       <main class="conteudo vazio">
@@ -85,14 +82,7 @@ export function Lista({ grupos, status }) {
 
       <div class="resumo">
         <div class="resumo-acoes">
-          <button
-            type="button"
-            class="botao botao-secundario"
-            disabled={!feitos}
-            onClick={() => setConfirmando(true)}
-          >
-            Zerar lista
-          </button>
+          <BotaoZerar />
           <a
             class={pendentes ? 'botao botao-whatsapp' : 'botao botao-whatsapp desabilitado'}
             href={`https://wa.me/?text=${encodeURIComponent(textoWhatsApp(grupos))}`}
@@ -104,17 +94,6 @@ export function Lista({ grupos, status }) {
         </div>
       </div>
 
-      <Confirmacao
-        aberta={confirmando}
-        titulo="Zerar a lista?"
-        texto="As marcações serão apagadas. As receitas do planejador continuam."
-        rotuloConfirmar="Zerar lista"
-        aoConfirmar={() => {
-          zerarMarcacoes();
-          setConfirmando(false);
-        }}
-        aoCancelar={() => setConfirmando(false)}
-      />
     </>
   );
 }

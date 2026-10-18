@@ -174,7 +174,7 @@ export function ajustarPorcoes(receitaId, delta) {
   definirPorcoes(receitaId, (atual.estado.planejador[receitaId] ?? 0) + delta);
 }
 
-/** RN-08: zerar o planejador esvazia a lista, então as marcações também saem. */
+/** RN-08: o Zerar do Planejador e da Lista apaga receitas, porções e marcações. */
 export function zerarPlanejador() {
   mudar([
     { campo: ['planejador'], valor: {} },
@@ -185,9 +185,4 @@ export function zerarPlanejador() {
 /** `quantidade` null desmarca o item. */
 export function definirMarcacao(codigo, quantidade) {
   mudar([{ campo: ['marcados', codigo], valor: quantidade }]);
-}
-
-/** RF-26: limpa as marcações sem mexer no planejador. */
-export function zerarMarcacoes() {
-  mudar([{ campo: ['marcados'], valor: {} }]);
 }
