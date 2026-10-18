@@ -1,8 +1,15 @@
 import { useMemo, useState } from 'preact/hooks';
-import { ArrowLeft, Copy, Download, List, Share2, Smartphone, Users } from 'lucide-preact';
+import { ArrowLeft, Copy, Download, KeyRound, List, Share2, Smartphone, Users } from 'lucide-preact';
 import { renderSVG } from 'uqr';
+import { Confirmacao } from '../componentes/Confirmacao.jsx';
 import { STATUS } from '../componentes/TopoTitulo.jsx';
-import { criarCasal, entrarNoCasal, exportarCaderno, sincronizacaoDisponivel } from '../dados/repositorio.js';
+import {
+  criarCasal,
+  entrarNoCasal,
+  exportarCaderno,
+  gerarNovoCodigo,
+  sincronizacaoDisponivel,
+} from '../dados/repositorio.js';
 import { voltar } from '../rotas.js';
 
 const linkDoConvite = (codigo) => `${location.origin}${location.pathname}#/entrar/${codigo}`;
@@ -31,6 +38,7 @@ export function Ajustes({ codigo, status, convite }) {
 
   const { Icone, texto } = STATUS[status] ?? STATUS.local;
   const conviteNovo = convite && convite !== codigo;
+  const substituido = status === 'substituido';
 
   return (
     <main class="conteudo ajustes">
@@ -81,9 +89,25 @@ export function Ajustes({ codigo, status, convite }) {
             </section>
           )}
 
-          {codigo ? (
-            <CodigoDoCasal codigo={codigo} />
-          ) : conviteNovo ? null : (
+          {substituido && (
+            <section class="cartao cartao-destaque">
+              <h2>O código foi trocado</h2>
+              <p>
+                O outro celular gerou um código novo, e este aqui deixou de funcionar. Peça o código novo e entre com
+                ele logo abaixo.
+              </p>
+            </section>
+          )}
+
+          {codigo && !substituido ? (
+            <CodigoDoCasal
+              codigo={codigo}
+              ocupado={ocupado}
+              aoTrocar={() =>
+                executar(gerarNovoCodigo, 'Código trocado. Agora mande o código novo para o outro celular.')
+              }
+            />
+          ) : codigo || conviteNovo ? null : (
             <section class="cartao">
               <h2>Usar nos dois celulares</h2>
               <p>
@@ -100,7 +124,7 @@ export function Ajustes({ codigo, status, convite }) {
             </section>
           )}
 
-          <details class="cartao" open={!codigo && !conviteNovo}>
+          <details class="cartao" open={(!codigo && !conviteNovo) || substituido}>
             <summary>{codigo ? 'Entrar com outro código' : 'Já temos um código'}</summary>
             <form
               class="entrar"
@@ -143,8 +167,9 @@ export function Ajustes({ codigo, status, convite }) {
   );
 }
 
-function CodigoDoCasal({ codigo }) {
+function CodigoDoCasal({ codigo, ocupado, aoTrocar }) {
   const [copiado, setCopiado] = useState(null);
+  const [trocando, setTrocando] = useState(false);
   const link = linkDoConvite(codigo);
   const qr = useMemo(() => renderSVG(link, { border: 2, blackColor: '#1D2620', whiteColor: '#FFFFFF' }), [link]);
 
@@ -161,8 +186,8 @@ function CodigoDoCasal({ codigo }) {
     <section class="cartao">
       <h2>Código do casal</h2>
       <p>
-        No outro celular, aponte a câmera para o QR code ou abra o link. Se o app já estiver instalado lá, abra
-        Ajustes no app e cole o código em "Entrar com outro código".
+        No outro celular, aponte a câmera para o QR code ou abra o link. Se o app já estiver instalado lá, abra Ajustes
+        no app e cole o código em "Entrar com outro código".
       </p>
       <div class="qr" role="img" aria-label="QR code com o link do convite" dangerouslySetInnerHTML={{ __html: qr }} />
       <div class="ajustes-acoes">
@@ -182,6 +207,20 @@ function CodigoDoCasal({ codigo }) {
       {copiado && <p role="status">{copiado}</p>}
       <code class="codigo">{codigo}</code>
       <p class="nota">Quem tiver este código vê e altera o caderno. Mande só para o outro celular.</p>
+      <button type="button" class="botao botao-perigo-texto" disabled={ocupado} onClick={() => setTrocando(true)}>
+        <KeyRound size={20} aria-hidden="true" /> Trocar código
+      </button>
+      <Confirmacao
+        aberta={trocando}
+        titulo="Trocar o código do casal?"
+        texto="Use se o código vazou. Receitas, planejador e lista vão para um código novo, e o atual deixa de funcionar. Depois, o outro celular precisa entrar com o código novo."
+        rotuloConfirmar="Trocar código"
+        aoConfirmar={() => {
+          setTrocando(false);
+          aoTrocar();
+        }}
+        aoCancelar={() => setTrocando(false)}
+      />
     </section>
   );
 }

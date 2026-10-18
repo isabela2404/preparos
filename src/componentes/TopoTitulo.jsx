@@ -8,6 +8,7 @@ export const STATUS = {
   sincronizando: { Icone: RefreshCw, texto: 'Sincronizando' },
   offline: { Icone: CloudOff, texto: 'Offline' },
   erro: { Icone: TriangleAlert, texto: 'Erro ao sincronizar' },
+  substituido: { Icone: TriangleAlert, texto: 'Código trocado no outro celular' },
 };
 
 export function TopoTitulo({ titulo, status }) {

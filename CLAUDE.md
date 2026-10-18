@@ -23,7 +23,7 @@ A especificação completa está em [docs/visao-produto-requisitos.md](docs/visa
 - `src/dominio/`: regras puras, testadas com Vitest (categorias, setores, unidades RN-03/RN-04, validação da carga RN-02, cálculo e agrupamento da lista RN-01 a RN-10).
 - `src/dados/repositorio.js`: a camada de dados trocável (RNF-09). As telas só leem (`useRepositorio`) e gravam por ela. Sem código do casal, tudo fica no aparelho (carga empacotada + localStorage). Com código, `src/dados/firestore.js` é carregado por import dinâmico e passa a ser a fonte; o localStorage guarda uma cópia para abrir na hora.
 - Cada operação vira uma lista de mudanças de campo (`src/dados/mudancas.js`), aplicada na hora no aparelho e enviada ao Firestore com `updateDoc` só nos campos tocados.
-- Banco: `casais/{codigo}` com `planejador`, `marcados`, `avulsos` (mapa) e `versaoCarga`; subcoleções `receitas` (com `ordem`) e `ingredientes`. A carga não é mais regravada depois da criação, para não apagar o que foi editado pela tela. Regras em `firestore.rules`, testadas com `npm run test:regras` (emulador, Java 21).
+- Banco: `casais/{codigo}` com `planejador`, `marcados`, `avulsos` (mapa), `versaoCarga` e, depois de uma troca de código, `substituido: true` (o espaço antigo fica vazio); subcoleções `receitas` (com `ordem`) e `ingredientes`. A carga não é mais regravada depois da criação, para não apagar o que foi editado pela tela. Regras em `firestore.rules`, testadas com `npm run test:regras` (emulador, Java 21).
 - Firebase: projeto `preparos-d4934`, na conta da Pessoa A. Firestore `(default)` em `southamerica-east1`, com proteção contra exclusão. Publicar regras: `npx firebase deploy --only firestore:rules --project preparos-d4934`. Atenção: `firebase deploy` cria o banco sozinho em `nam5` se ele não existir.
 - Configuração do Firebase só por variáveis de ambiente (`VITE_FIREBASE_*`): `.env.local` na máquina e Variables do GitHub Actions na publicação. Nunca no código.
 - `src/dados/carga-inicial.json`: a carga inicial do casal (29 receitas, 58 ingredientes). Traz também as listas de categorias e setores, que precisam usar os mesmos códigos de `src/dominio/`, e as `premissas` das conversões. O formato está na seção 8 do documento.
@@ -43,7 +43,7 @@ O trabalho segue as fases da seção 11 do documento, cada uma com um critério 
 
 As fases 1, 2 e 3 do roadmap estão prontas e validadas nos dois celulares (18/10/2026). O app está em https://isabela2404.github.io/preparos/ (repositório isabela2404/preparos), sincronizando pelo Firestore.
 
-Da etapa "Depois" já entraram: cadastro de receitas e ingredientes pela tela, busca (RF-03), modo cozinha (RF-06) e itens avulsos (RF-27). Ainda candidatos: porções no detalhe (RF-05), origem de cada item (RF-28), gerar código novo do casal, fotos das receitas, restringir a chave do Firebase ao domínio do Pages.
+Da etapa "Depois" já entraram: cadastro de receitas e ingredientes pela tela, busca (RF-03), porções no detalhe e no modo cozinha (RF-05), modo cozinha (RF-06), itens avulsos com grupo Outros (RF-27), origem de cada item (RF-28) e troca do código do casal. Ainda candidatos: fotos das receitas, restringir a chave do Firebase ao domínio do Pages.
 
 ## Git
 

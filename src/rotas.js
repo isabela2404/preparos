@@ -4,11 +4,12 @@ import { useEffect, useState } from 'preact/hooks';
 // não sabe redirecionar caminhos desconhecidos para ele.
 
 export function interpretarRota(hash) {
-  const [tela, id, acao] = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
+  const [tela, id, acao, extra] = hash.replace(/^#\/?/, '').split('/').filter(Boolean);
   if (tela === 'receita' && id) {
     const rota = { tela: 'receita', id: decodeURIComponent(id) };
     if (acao === 'editar') return { ...rota, tela: 'editar' };
-    if (acao === 'cozinha') return { ...rota, tela: 'cozinha' };
+    // #/receita/<id>/cozinha/12 abre o modo cozinha com as quantidades para 12 porções (RF-05).
+    if (acao === 'cozinha') return { ...rota, tela: 'cozinha', porcoes: Number(extra) || null };
     return rota;
   }
   if (tela === 'nova-receita') return { tela: 'editar', id: null };

@@ -1,10 +1,25 @@
 import { useState } from 'preact/hooks';
-import { Apple, Archive, Check, Drumstick, Milk, Package, Plus, Share2, ShoppingBag, Sparkles, X } from 'lucide-preact';
+import {
+  Apple,
+  Archive,
+  Check,
+  ChevronDown,
+  Drumstick,
+  Milk,
+  Package,
+  Plus,
+  Share2,
+  ShoppingBag,
+  Sparkles,
+  X,
+} from 'lucide-preact';
 import { BotaoZerar } from '../componentes/BotaoZerar.jsx';
 import { TopoTitulo } from '../componentes/TopoTitulo.jsx';
 import { adicionarAvulso, definirMarcacao, marcarAvulso, removerAvulso } from '../dados/repositorio.js';
 import { GRUPO_OUTROS, quantidadeAoMarcar, textoQuantidade, textoWhatsApp } from '../dominio/lista.js';
 import { SETORES } from '../dominio/setores.js';
+import { formatarQuantidade } from '../dominio/unidades.js';
+import { linkReceita } from '../rotas.js';
 
 const ICONE_SETOR = {
   acougue: Drumstick,
@@ -16,8 +31,17 @@ const ICONE_SETOR = {
   despensa: Archive,
 };
 
-// RF-20 a RF-27.
+// RF-20 a RF-28.
 export function Lista({ grupos, status }) {
+  const [abertos, setAbertos] = useState(() => new Set());
+  const alternarOrigem = (codigo) =>
+    setAbertos((atuais) => {
+      const novos = new Set(atuais);
+      if (novos.has(codigo)) novos.delete(codigo);
+      else novos.add(codigo);
+      return novos;
+    });
+
   const total = grupos.reduce((soma, g) => soma + g.itens.length, 0);
   const pendentes = grupos.reduce((soma, g) => soma + g.pendentes, 0);
   const feitos = total - pendentes;
@@ -47,7 +71,9 @@ export function Lista({ grupos, status }) {
       <main class={total ? 'conteudo com-resumo' : 'conteudo'}>
         {!total && (
           <div class="lista-vazia">
-            <p>A lista sai das receitas escolhidas no Planejador. Também dá para anotar aqui o que não vem de receita.</p>
+            <p>
+              A lista sai das receitas escolhidas no Planejador. Também dá para anotar aqui o que não vem de receita.
+            </p>
             <a class="botao botao-secundario" href="#/planejador">
               Ir para o Planejador
             </a>
@@ -65,34 +91,47 @@ export function Lista({ grupos, status }) {
               </h2>
               <ul class="itens">
                 {grupo.itens.map((item) => (
-                  <li key={item.codigo} class="item-linha">
-                    <label class={item.marcado ? 'item marcado' : 'item'}>
-                      <input
-                        type="checkbox"
-                        class="so-leitor"
-                        checked={item.marcado}
-                        onChange={() =>
-                          item.avulso
-                            ? marcarAvulso(item.id, !item.marcado)
-                            : definirMarcacao(item.codigo, item.marcado ? null : quantidadeAoMarcar(item))
-                        }
-                      />
-                      <span class="caixa" aria-hidden="true">
-                        <Check size={20} strokeWidth={3} />
-                      </span>
-                      <span class="item-nome">{item.nome}</span>
-                      <span class="item-qtd">{textoQuantidade(item)}</span>
-                    </label>
-                    {item.avulso && (
-                      <button
-                        type="button"
-                        class="item-remover"
-                        aria-label={`Tirar ${item.nome} da lista`}
-                        onClick={() => removerAvulso(item.id)}
-                      >
-                        <X size={20} aria-hidden="true" />
-                      </button>
-                    )}
+                  <li key={item.codigo}>
+                    <div class="item-linha">
+                      <label class={item.marcado ? 'item marcado' : 'item'}>
+                        <input
+                          type="checkbox"
+                          class="so-leitor"
+                          checked={item.marcado}
+                          onChange={() =>
+                            item.avulso
+                              ? marcarAvulso(item.id, !item.marcado)
+                              : definirMarcacao(item.codigo, item.marcado ? null : quantidadeAoMarcar(item))
+                          }
+                        />
+                        <span class="caixa" aria-hidden="true">
+                          <Check size={20} strokeWidth={3} />
+                        </span>
+                        <span class="item-nome">{item.nome}</span>
+                        <span class="item-qtd">{textoQuantidade(item)}</span>
+                      </label>
+                      {item.avulso ? (
+                        <button
+                          type="button"
+                          class="item-remover"
+                          aria-label={`Tirar ${item.nome} da lista`}
+                          onClick={() => removerAvulso(item.id)}
+                        >
+                          <X size={20} aria-hidden="true" />
+                        </button>
+                      ) : (
+                        <button
+                          type="button"
+                          class="item-remover item-origem"
+                          aria-expanded={abertos.has(item.codigo)}
+                          aria-label={`De onde vem ${item.nome}`}
+                          onClick={() => alternarOrigem(item.codigo)}
+                        >
+                          <ChevronDown size={20} aria-hidden="true" />
+                        </button>
+                      )}
+                    </div>
+                    {abertos.has(item.codigo) && <Origens item={item} />}
                   </li>
                 ))}
               </ul>
@@ -160,5 +199,26 @@ function NovoAvulso() {
         </button>
       </div>
     </form>
+  );
+}
+
+// RF-28: de quais receitas vem o item e quanto cada uma pede.
+function Origens({ item }) {
+  const arredondado = item.qtdCompra != null && Math.abs(item.qtdCompra - item.total) > 1e-6;
+  return (
+    <div class="origens">
+      <ul>
+        {item.origens.map((o) => (
+          <li key={o.receitaId}>
+            <a href={linkReceita(o.receitaId)}>{o.nome}</a>
+            <span>
+              {o.porcoes} {o.porcoes === 1 ? 'porção' : 'porções'} ·{' '}
+              {o.quantidade == null ? 'a gosto' : formatarQuantidade(o.quantidade, item.unidade)}
+            </span>
+          </li>
+        ))}
+      </ul>
+      {arredondado && <p>Somando dá {formatarQuantidade(item.total, item.unidade)}; a lista arredonda para cima.</p>}
+    </div>
   );
 }

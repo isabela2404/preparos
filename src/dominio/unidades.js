@@ -20,7 +20,8 @@ const FRACOES = [
 // A carga guarda 4 casas (1/3 vira 0,3333), então a comparação é folgada.
 const FOLGA_FRACAO = 1e-3;
 
-function formatarContagem(valor) {
+/** Número com frações comuns: 1,5 vira "1½" e 0,25 vira "¼". */
+export function formatarFracao(valor) {
   const inteiro = Math.floor(valor + FOLGA_FRACAO);
   const resto = valor - inteiro;
   if (resto < FOLGA_FRACAO) return String(inteiro);
@@ -40,7 +41,7 @@ export function formatarQuantidade(valor, unidade) {
     case 'ml':
       return valor >= 1000 ? `${emMilhares(valor)} L` : `${formatarNumero(valor, 1)} ml`;
     case 'un':
-      return `${formatarContagem(valor)} ${valor < 2 ? 'unidade' : 'unidades'}`;
+      return `${formatarFracao(valor)} ${valor < 2 ? 'unidade' : 'unidades'}`;
     default:
       throw new Error(`Unidade desconhecida: ${unidade}`);
   }

@@ -13,10 +13,11 @@ service cloud.firestore {
     match /casais/{codigo} {
       allow get: if codigoValido(codigo);
       allow create, update: if codigoValido(codigo)
-        && request.resource.data.keys().hasOnly(['planejador', 'marcados', 'avulsos', 'versaoCarga', 'criadoEm'])
+        && request.resource.data.keys().hasOnly(['planejador', 'marcados', 'avulsos', 'versaoCarga', 'criadoEm', 'substituido'])
         && request.resource.data.planejador is map
         && request.resource.data.marcados is map
-        && (!('avulsos' in request.resource.data) || request.resource.data.avulsos is map);
+        && (!('avulsos' in request.resource.data) || request.resource.data.avulsos is map)
+        && (!('substituido' in request.resource.data) || request.resource.data.substituido is bool);
       allow list, delete: if false;
 
       match /{colecao}/{id} {

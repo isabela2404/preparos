@@ -29,13 +29,15 @@ export function calcularItens(planejador, receitas, ingredientes) {
           basico: Boolean(ing.basico),
           total: 0,
           aGosto: false,
-          receitas: [],
+          // RF-28: de quais receitas vem, com quanto cada uma pede (null = a gosto).
+          origens: [],
         };
         itens.set(ingrediente, item);
       }
+      const quantidade = aGosto ? null : qtdPorPorcao * porcoes;
       if (aGosto) item.aGosto = true;
-      else item.total += qtdPorPorcao * porcoes;
-      if (!item.receitas.includes(receitaId)) item.receitas.push(receitaId);
+      else item.total += quantidade;
+      item.origens.push({ receitaId, nome: receita.nome, porcoes, quantidade });
     }
   }
 

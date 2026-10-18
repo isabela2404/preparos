@@ -69,7 +69,12 @@ export function App() {
       break;
     case 'cozinha':
       tela = receitaDaRota ? (
-        <ModoCozinha key={rota.id} receita={receitaDaRota} />
+        <ModoCozinha
+          key={`${rota.id}:${rota.porcoes}`}
+          receita={receitaDaRota}
+          ingredientes={caderno.ingredientes}
+          porcoes={rota.porcoes}
+        />
       ) : (
         <DetalheReceita receita={null} />
       );

@@ -100,7 +100,7 @@ Cada requisito tem um código (RF) para facilitar a conversa e os testes. Priori
 | RF-25 | Compartilhar a lista pelo WhatsApp como texto, com setores, itens e quantidades; por padrão só os itens não marcados. | M |
 | RF-26 | Botão "Zerar" na lista, com confirmação, igual ao do planejador: apaga receitas, porções e marcações. | M |
 | RF-27 | Permitir adicionar um item avulso à lista (ex.: papel toalha) que não vem de receita, num dos setores ou no grupo Outros. | D |
-| RF-28 | Mostrar de quais receitas vem cada item ao tocar nele. | D |
+| RF-28 | Mostrar de quais receitas vem cada item, e quanto cada uma pede, pela seta ao lado dele (tocar no item continua marcando). | D |
 
 ### 4.4 Sincronização e persistência
 
@@ -229,6 +229,7 @@ Os dois celulares baixam o app e as fotos do GitHub Pages e leem e gravam receit
 - O segundo aparelho recebe a chave uma única vez, por um link ou QR code gerado na tela de Ajustes, e passa a ler e gravar o mesmo documento.
 - As regras de segurança do banco permitem ler e gravar um documento conhecido pelo caminho, e proibem listar ou procurar outros. Sem a chave, não há como encontrar os dados.
 - A chave nunca entra no repositório do código.
+- Se a chave vazar, Ajustes → Trocar código gera uma chave nova com todos os dados, esvazia o espaço antigo e o marca como trocado.
 
 **Como evitar conflitos entre os dois celulares**
 
@@ -342,7 +343,7 @@ Os cinco pontos em aberto foram decididos em 18/10/2026; a tabela registra a dec
 - iPhone e PWA: o Safari instala o app pelo botão Compartilhar, e o armazenamento local pode ser limpo se o app ficar muito tempo sem uso. Mitigação: os dados importantes ficam no banco, e o app reidrata ao abrir.
 - Soma de ingredientes depende de um catálogo limpo (RN-02). Um nome digitado diferente numa receita nova gera duas linhas. Mitigação: o app valida receitas contra o catálogo e avisa de códigos desconhecidos.
 - Medidas caseiras (colher, xícara, dente de alho) precisam de fatores de conversão razoáveis; pequenas diferenças são aceitáveis, mas devem ficar visíveis no catálogo.
-- Sem login, quem receber o link com a chave acessa os dados. Mitigação: não postar a chave, e prever um botão futuro para gerar uma chave nova.
+- Sem login, quem receber o link com a chave acessa os dados. Mitigação: não postar a chave; se ela vazar, Ajustes → Trocar código copia tudo para um código novo e esvazia o antigo, que passa a avisar o outro celular de que foi trocado.
 
 ## 11. Roadmap sugerido
 
@@ -373,4 +374,4 @@ flowchart LR
 
 Os desejáveis marcados com D na seção 4 entram na etapa Depois, na ordem que o uso pedir. Cadastro de receitas pela tela (CRUD) pode ser a primeira evolução.
 
-**Andamento.** As fases 1 a 3 foram validadas nos dois celulares em 18/10/2026. Da etapa Depois já entraram o cadastro de receitas e ingredientes pela tela, a busca (RF-03), o modo cozinha (RF-06) e os itens avulsos (RF-27). Com o cadastro pela tela, o banco passou a ser a fonte das receitas: a carga inicial só é usada na criação do código do casal.
+**Andamento.** As fases 1 a 3 foram validadas nos dois celulares em 18/10/2026. Da etapa Depois já entraram o cadastro de receitas e ingredientes pela tela, a busca (RF-03), as porções no detalhe (RF-05, também no modo cozinha), o modo cozinha (RF-06), os itens avulsos (RF-27), a origem de cada item (RF-28) e a troca do código do casal. Com o cadastro pela tela, o banco passou a ser a fonte das receitas: a carga inicial só é usada na criação do código do casal.

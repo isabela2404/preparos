@@ -1,18 +1,22 @@
 import { useState } from 'preact/hooks';
 import { ArrowLeft, ChefHat, ClipboardCheck, Clock, Lightbulb, Pencil, Plus, Snowflake, Users } from 'lucide-preact';
 import { CapaReceita } from '../componentes/CapaReceita.jsx';
-import { ContadorPorcoes } from '../componentes/ContadorPorcoes.jsx';
+import { Contador, ContadorPorcoes } from '../componentes/ContadorPorcoes.jsx';
 import { TagCategoria } from '../componentes/TagCategoria.jsx';
 import { definirPorcoes } from '../dados/repositorio.js';
+import { ingredientesPara } from '../dominio/porcoes.js';
 import { SETOR_POR_ID } from '../dominio/setores.js';
-import { formatarQuantidade } from '../dominio/unidades.js';
 import { linkReceita, voltar } from '../rotas.js';
 
-// RF-04: foto, rendimento, tempo, conservação, ingredientes por porção com o
-// setor de cada um e passo a passo numerado. Na cozinha a receita inteira,
-// como foi escrita, é mais fácil de seguir; por isso ela abre primeiro.
+// RF-04: foto, rendimento, tempo, conservação, ingredientes com o setor de
+// cada um e passo a passo numerado. RF-05: os ingredientes podem ser vistos
+// para outro número de porções, sem mexer no planejador. A vista abre com as
+// porções do planejador, quando a receita está nele.
 export function DetalheReceita({ receita, ingredientes, porcoes }) {
-  const [porPorcao, setPorPorcao] = useState(false);
+  const padrao = receita?.porcoesPadrao ?? 1;
+  const [vista, setVista] = useState(porcoes ?? padrao);
+  // A receita original já serve quando a vista está no rendimento padrão.
+  const [ajustando, setAjustando] = useState(vista !== padrao);
 
   if (!receita) {
     return (
@@ -81,7 +85,10 @@ export function DetalheReceita({ receita, ingredientes, porcoes }) {
         )}
 
         {/* RF-06 */}
-        <a class="botao botao-secundario botao-largo" href={`${linkReceita(receita.id)}/cozinha`}>
+        <a
+          class="botao botao-secundario botao-largo"
+          href={`${linkReceita(receita.id)}/cozinha${ajustando && vista !== padrao ? `/${vista}` : ''}`}
+        >
           <ChefHat size={22} aria-hidden="true" /> Modo cozinha
         </a>
 
@@ -90,31 +97,40 @@ export function DetalheReceita({ receita, ingredientes, porcoes }) {
             Ingredientes
           </h2>
           <div class="alternador" role="group" aria-label="Mostrar ingredientes">
-            <button type="button" aria-pressed={!porPorcao} onClick={() => setPorPorcao(false)}>
-              Receita inteira
+            <button type="button" aria-pressed={!ajustando} onClick={() => setAjustando(false)}>
+              Receita original
             </button>
-            <button type="button" aria-pressed={porPorcao} onClick={() => setPorPorcao(true)}>
-              Por porção
+            <button type="button" aria-pressed={ajustando} onClick={() => setAjustando(true)}>
+              Ajustar porções
             </button>
           </div>
 
-          {porPorcao ? (
-            <ul class="ingredientes">
-              {receita.ingredientes.map(({ ingrediente, qtdPorPorcao, aGosto }) => {
-                const ing = ingredientes[ingrediente];
-                return (
-                  <li key={ingrediente} class="ingrediente">
+          {ajustando ? (
+            <>
+              <div class="vista-porcoes">
+                <span>Para</span>
+                <Contador
+                  valor={vista}
+                  rotulo="Porções para ver a receita"
+                  aoMudar={(delta) => setVista((atual) => Math.min(99, Math.max(1, atual + delta)))}
+                />
+                <span>{vista === 1 ? 'porção' : 'porções'}</span>
+              </div>
+              <p class="nota vista-nota">A receita original rende {padrao}. Isto não muda o planejador nem a lista.</p>
+              <ul class="ingredientes">
+                {ingredientesPara(receita, ingredientes, vista).map((i) => (
+                  <li key={i.codigo} class="ingrediente">
                     <span class="ingrediente-nome">
-                      {ing?.nome ?? ingrediente}
-                      <small>{SETOR_POR_ID[ing?.setor]?.nome}</small>
+                      {i.nome}
+                      <small>{SETOR_POR_ID[i.setor]?.nome}</small>
                     </span>
-                    <span class={aGosto ? 'ingrediente-qtd a-gosto' : 'ingrediente-qtd'}>
-                      {aGosto ? 'a gosto' : formatarQuantidade(qtdPorPorcao, ing?.unidade)}
+                    <span class={i.quantidade === 'a gosto' ? 'ingrediente-qtd a-gosto' : 'ingrediente-qtd'}>
+                      {i.quantidade}
                     </span>
                   </li>
-                );
-              })}
-            </ul>
+                ))}
+              </ul>
+            </>
           ) : (
             <ul class="ingredientes">
               {receita.ingredientesTexto.map((linha, i) => (

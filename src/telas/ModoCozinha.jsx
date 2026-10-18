@@ -1,11 +1,18 @@
 import { useEffect, useState } from 'preact/hooks';
 import { Check, RotateCcw, Sun, X } from 'lucide-preact';
+import { ingredientesPara } from '../dominio/porcoes.js';
 import { voltar } from '../rotas.js';
 
 // RF-06: letra grande, tela acesa enquanto a receita está aberta e passos
 // que podem ser marcados. As marcações ficam só neste aparelho.
-export function ModoCozinha({ receita }) {
-  const chave = `caderno-de-preparos:cozinha:${receita.id}`;
+// Com `porcoes` diferente do rendimento, "Separe" mostra as quantidades
+// ajustadas (RF-05) no lugar do texto original.
+export function ModoCozinha({ receita, ingredientes, porcoes }) {
+  const ajustada = porcoes && porcoes !== receita.porcoesPadrao;
+  const separe = ajustada
+    ? ingredientesPara(receita, ingredientes, porcoes).map((i) => `${i.nome}: ${i.quantidade}`)
+    : receita.ingredientesTexto;
+  const chave = `caderno-de-preparos:cozinha:${receita.id}${ajustada ? `:${porcoes}` : ''}`;
   const [feitos, setFeitos] = useState(() => lerFeitos(chave));
   const telaAcesa = useTelaAcesa();
 
@@ -41,8 +48,13 @@ export function ModoCozinha({ receita }) {
 
       <section aria-labelledby="cozinha-separe">
         <h2 id="cozinha-separe">Separe</h2>
+        {ajustada && (
+          <p class="cozinha-aviso">
+            Quantidades para {porcoes} porções. A receita original rende {receita.porcoesPadrao}.
+          </p>
+        )}
         <ul class="cozinha-lista">
-          {receita.ingredientesTexto.map((linha, i) => (
+          {separe.map((linha, i) => (
             <li key={i}>
               <button
                 type="button"

@@ -3,7 +3,7 @@
 // então quem usa o app sem sincronizar não baixa o SDK.
 //
 // Estrutura no banco:
-//   casais/{codigo}                 → { planejador, marcados, avulsos, versaoCarga, criadoEm }
+//   casais/{codigo}                 → { planejador, marcados, avulsos, versaoCarga, criadoEm, substituido? }
 //   casais/{codigo}/receitas/{id}   → receita da carga, com o campo `ordem`
 //   casais/{codigo}/ingredientes/{id}
 
@@ -16,6 +16,7 @@ import {
   deleteField,
   doc,
   getDocFromServer,
+  getDocsFromServer,
   initializeFirestore,
   onSnapshot,
   persistentLocalCache,
@@ -71,8 +72,26 @@ export async function criarCasal(codigo, carga, estado) {
   await lote.commit();
 }
 
-export async function casalExiste(codigo) {
-  return (await getDocFromServer(casalRef(codigo))).exists();
+/** 'ativo', 'trocado' (substituído por um código novo) ou 'inexistente'. */
+export async function situacaoDoCasal(codigo) {
+  const casal = await getDocFromServer(casalRef(codigo));
+  if (!casal.exists()) return 'inexistente';
+  return casal.get('substituido') ? 'trocado' : 'ativo';
+}
+
+/**
+ * Esvazia o espaço de um código trocado: apaga receitas e ingredientes, limpa
+ * o estado e marca como substituído, para quem tiver o código antigo não ver
+ * mais nada e o outro celular saber que precisa do código novo.
+ */
+export async function encerrarCasal(codigo) {
+  const casal = casalRef(codigo);
+  const lote = writeBatch(db);
+  for (const colecao of ['receitas', 'ingredientes']) {
+    (await getDocsFromServer(collection(casal, colecao))).docs.forEach((d) => lote.delete(d.ref));
+  }
+  lote.update(casal, { planejador: {}, marcados: {}, avulsos: {}, substituido: true });
+  await lote.commit();
 }
 
 /**
@@ -120,7 +139,12 @@ export function conectar(codigo, { aoMudarCaderno, aoMudarEstado, aoMudarStatus 
           return;
         }
         const dados = s.data();
-        aoMudarEstado({ planejador: dados.planejador ?? {}, marcados: dados.marcados ?? {}, avulsos: dados.avulsos ?? {} });
+        if (dados.substituido) return aoMudarStatus('substituido');
+        aoMudarEstado({
+          planejador: dados.planejador ?? {},
+          marcados: dados.marcados ?? {},
+          avulsos: dados.avulsos ?? {},
+        });
         if (!navigator.onLine) aoMudarStatus('offline');
         else aoMudarStatus(hasPendingWrites || fromCache ? 'sincronizando' : 'sincronizado');
       },

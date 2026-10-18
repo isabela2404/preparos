@@ -44,6 +44,13 @@ describe.skipIf(!emulador)('regras do Firestore', () => {
     expect((await getDoc(casal)).data().avulsos.a1.nome).toBe('Papel toalha');
   });
 
+  it('aceita marcar o casal como substituído', async () => {
+    const outro = doc(db, 'casais', 'Z'.repeat(32));
+    await setDoc(outro, { planejador: {}, marcados: {} });
+    await updateDoc(outro, { substituido: true });
+    await negado(updateDoc(outro, { substituido: 'sim' }));
+  });
+
   it('recusa campos fora do formato', async () => {
     await negado(updateDoc(casal, { outroCampo: 1 }));
     await negado(updateDoc(casal, { planejador: 'texto' }));

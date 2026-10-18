@@ -13,6 +13,7 @@ const ingredientes = {
 const receitas = [
   {
     id: 'almondegas',
+    nome: 'Almôndegas',
     ingredientes: [
       { ingrediente: 'carne-moida', qtdPorPorcao: 62.5 },
       { ingrediente: 'ovo', qtdPorPorcao: 0.125 },
@@ -21,6 +22,7 @@ const receitas = [
   },
   {
     id: 'carne-refogada',
+    nome: 'Carne refogada',
     ingredientes: [
       { ingrediente: 'carne-moida', qtdPorPorcao: 125 },
       { ingrediente: 'cenoura', qtdPorPorcao: 25 },
@@ -29,6 +31,7 @@ const receitas = [
   },
   {
     id: 'frango',
+    nome: 'Frango',
     ingredientes: [
       { ingrediente: 'limao', qtdPorPorcao: 0.25 },
       { ingrediente: 'sal', qtdPorPorcao: 1.5 },
@@ -42,7 +45,10 @@ describe('calcularItens', () => {
   it('soma o mesmo ingrediente de receitas diferentes numa linha (RN-01, RN-02)', () => {
     const itens = porCodigo(calcularItens({ almondegas: 8, 'carne-refogada': 4 }, receitas, ingredientes));
     expect(itens['carne-moida'].total).toBe(1000);
-    expect(itens['carne-moida'].receitas).toEqual(['almondegas', 'carne-refogada']);
+    expect(itens['carne-moida'].origens.map((o) => [o.receitaId, o.porcoes, o.quantidade])).toEqual([
+      ['almondegas', 8, 500],
+      ['carne-refogada', 4, 500],
+    ]);
     expect(textoQuantidade(itens['carne-moida'])).toBe('1 kg');
   });
 

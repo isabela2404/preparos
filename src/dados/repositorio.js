@@ -39,7 +39,7 @@ import { aplicarMudancas, extrairCodigo, gerarCodigo } from './mudancas.js';
  *   marcados: Record<string, number>,    // ingrediente → quantidade na lista quando foi marcado (RN-07)
  *   avulsos: Record<string, { nome: string, setor: string, marcado: boolean }>  // RF-27
  * }} Estado
- * @typedef {'local' | 'sincronizado' | 'sincronizando' | 'offline' | 'erro'} Status
+ * @typedef {'local' | 'sincronizado' | 'sincronizando' | 'offline' | 'erro' | 'substituido'} Status
  */
 
 export const sincronizacaoDisponivel = Boolean(import.meta.env.VITE_FIREBASE_PROJECT_ID);
@@ -108,8 +108,9 @@ async function conectar() {
   });
 }
 
-addEventListener('offline', () => conexao && publicar({ status: 'offline' }));
-addEventListener('online', () => conexao && publicar({ status: 'sincronizando' }));
+const podeTrocarStatus = () => conexao && atual.status !== 'substituido';
+addEventListener('offline', () => podeTrocarStatus() && publicar({ status: 'offline' }));
+addEventListener('online', () => podeTrocarStatus() && publicar({ status: 'sincronizando' }));
 
 // Outra aba do mesmo aparelho mudou o estado (no modo local; com o banco, o Firestore avisa).
 addEventListener('storage', (evento) => {
@@ -131,14 +132,33 @@ export async function criarCasal() {
   await conectar();
 }
 
+/**
+ * Troca o código do casal, caso o atual tenha vazado. Copia receitas,
+ * ingredientes e estado para um código novo e só então esvazia o antigo.
+ * O outro celular passa a ver "código trocado" e precisa entrar com o novo.
+ */
+export async function gerarNovoCodigo() {
+  if (!navigator.onLine) throw new Error('Precisa de internet para trocar o código.');
+  const antigo = atual.codigo;
+  const novo = gerarCodigo();
+  const firestore = await import('./firestore.js');
+  await firestore.criarCasal(novo, exportarCaderno(), atual.estado);
+  await firestore.encerrarCasal(antigo);
+  guardar(CHAVE_CODIGO, novo);
+  publicar({ codigo: novo });
+  await conectar();
+}
+
 /** Passa a usar o caderno de outro aparelho. O planejador deste aparelho é substituído pelo de lá. */
 export async function entrarNoCasal(texto) {
   const codigo = extrairCodigo(texto);
   if (!codigo) throw new Error('Esse código não parece certo. Ele tem 32 letras e números.');
-  if (codigo === atual.codigo) return;
+  if (codigo === atual.codigo && atual.status !== 'substituido') return;
   if (!navigator.onLine) throw new Error('Precisa de internet para entrar com o código.');
   const firestore = await import('./firestore.js');
-  if (!(await firestore.casalExiste(codigo))) throw new Error('Não achei nenhum caderno com esse código.');
+  const situacao = await firestore.situacaoDoCasal(codigo);
+  if (situacao === 'trocado') throw new Error('Esse código foi trocado. Peça o código novo ao outro celular.');
+  if (situacao === 'inexistente') throw new Error('Não achei nenhum caderno com esse código.');
   guardar(CHAVE_CODIGO, codigo);
   publicar({ codigo });
   await conectar();
@@ -150,7 +170,8 @@ export async function entrarNoCasal(texto) {
 
 function mudar(mudancas) {
   publicar({ estado: aplicarMudancas(atual.estado, mudancas) });
-  conexao?.gravar(mudancas);
+  // Código trocado no outro celular: não grava mais no espaço antigo.
+  if (atual.status !== 'substituido') conexao?.gravar(mudancas);
 }
 
 /** RN-06: porções de 1 a 99; 0 tira a receita do planejador. */
@@ -239,4 +260,3 @@ export function exportarCaderno() {
     receitas: caderno.receitas.map(({ ordem: _, ...receita }) => receita),
   };
 }
-
