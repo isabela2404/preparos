@@ -1,14 +1,12 @@
 import { useLayoutEffect } from 'preact/hooks';
 import { CardReceita } from '../componentes/CardReceita.jsx';
 import { ChipsCategoria } from '../componentes/ChipsCategoria.jsx';
-import { CATEGORIAS } from '../dominio/categorias.js';
-
-const ORDEM_CATEGORIA = Object.fromEntries(CATEGORIAS.map((c, i) => [c.id, i]));
+import { filtrarPorCategoria } from '../dominio/categorias.js';
 
 // Guarda a rolagem da galeria para que voltar de uma receita não leve ao topo.
 let rolagemSalva = 0;
 
-export function Caderno({ receitas, categoria, aoMudarCategoria }) {
+export function Caderno({ receitas, planejador, categoria, aoMudarCategoria }) {
   useLayoutEffect(() => {
     scrollTo(0, rolagemSalva);
     return () => {
@@ -16,10 +14,7 @@ export function Caderno({ receitas, categoria, aoMudarCategoria }) {
     };
   }, []);
 
-  const visiveis = categoria
-    ? receitas.filter((r) => r.categoria === categoria)
-    : // Agrupa por categoria; dentro dela, vale a ordem da carga (sort é estável).
-      receitas.toSorted((a, b) => ORDEM_CATEGORIA[a.categoria] - ORDEM_CATEGORIA[b.categoria]);
+  const visiveis = filtrarPorCategoria(receitas, categoria);
 
   return (
     <>
@@ -39,7 +34,7 @@ export function Caderno({ receitas, categoria, aoMudarCategoria }) {
           <ul class="galeria">
             {visiveis.map((r) => (
               <li key={r.id}>
-                <CardReceita receita={r} />
+                <CardReceita receita={r} porcoes={planejador[r.id]} />
               </li>
             ))}
           </ul>

@@ -29,13 +29,16 @@ function formatarContagem(valor) {
   return inteiro ? `${inteiro}${fracao}` : fracao;
 }
 
+// Em kg e L, duas casas arredondadas para cima: 1405 g vira 1,41 kg, nunca 1,4 (RN-04).
+const emMilhares = (valor) => formatarNumero(Math.ceil(valor / 10 - EPSILON) / 100, 2);
+
 /** Exibe uma quantidade na unidade base, convertendo g → kg e ml → L a partir de 1000 (RN-03). */
 export function formatarQuantidade(valor, unidade) {
   switch (unidade) {
     case 'g':
-      return valor >= 1000 ? `${formatarNumero(valor / 1000, 2)} kg` : `${formatarNumero(valor, 1)} g`;
+      return valor >= 1000 ? `${emMilhares(valor)} kg` : `${formatarNumero(valor, 1)} g`;
     case 'ml':
-      return valor >= 1000 ? `${formatarNumero(valor / 1000, 2)} L` : `${formatarNumero(valor, 1)} ml`;
+      return valor >= 1000 ? `${emMilhares(valor)} L` : `${formatarNumero(valor, 1)} ml`;
     case 'un':
       return `${formatarContagem(valor)} ${valor < 2 ? 'unidade' : 'unidades'}`;
     default:

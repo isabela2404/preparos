@@ -10,3 +10,12 @@ export const CATEGORIAS = [
 ];
 
 export const CATEGORIA_POR_ID = Object.fromEntries(CATEGORIAS.map((c) => [c.id, c]));
+
+const ORDEM = Object.fromEntries(CATEGORIAS.map((c, i) => [c.id, i]));
+
+/** Receitas de uma categoria, ou de todas (null) agrupadas na ordem acima; dentro do grupo vale a ordem da carga. */
+export function filtrarPorCategoria(receitas, categoria) {
+  return categoria
+    ? receitas.filter((r) => r.categoria === categoria)
+    : receitas.toSorted((a, b) => ORDEM[a.categoria] - ORDEM[b.categoria]);
+}

@@ -148,7 +148,7 @@ Medidas caseiras (colher, xícara) entram no catálogo com um fator de conversã
 
 **RN-06 Porções.** O contador começa no rendimento padrão da receita e aceita inteiros de 1 a 99. Uma receita com 0 porções sai do planejador.
 
-**RN-07 Marcações x recálculo.** Se o planejador mudar depois de marcar itens na lista, as marcações dos itens que continuam na lista são mantidas. Se a quantidade de um item marcado aumentar, o item volta a ficar desmarcado, para não esquecer a diferença.
+**RN-07 Marcações x recálculo.** Se o planejador mudar depois de marcar itens na lista, as marcações dos itens que continuam na lista são mantidas. Se a quantidade de um item marcado aumentar, o item volta a ficar desmarcado, para não esquecer a diferença. Para isso, cada marcação guarda a quantidade que o item tinha na lista no momento em que foi marcado.
 
 **RN-08 Zerar.** "Zerar planejador" apaga seleções e porções e, como a lista é derivada, esvazia a lista. "Zerar lista" só limpa marcações e itens avulsos.
 
@@ -165,6 +165,8 @@ Medidas caseiras (colher, xícara) entram no catálogo com um fator de conversã
 - Cenoura: 600 g
 - Limão: 4 unidades
 ```
+
+**RN-10 Itens de despensa.** Ingredientes marcados como `basico` no catálogo (sal, pimenta) não entram no setor deles: vão para um grupo final da lista, "Confira na despensa". Mostram a quantidade somada quando alguma receita informa e "a gosto" quando nenhuma informa (ex.: "Sal: 10 g + a gosto").
 
 ## 6. Requisitos não funcionais
 
@@ -273,12 +275,12 @@ Todos os dados moram no banco, dentro do espaço do casal: o catálogo de ingred
 }
 ```
 
-**Estado sincronizado (banco, um documento por casal)**
+**Estado sincronizado (banco, um documento por casal)** – `planejador` guarda receita → porções; `marcados` guarda ingrediente → quantidade na lista quando foi marcado (RN-07).
 
 ```json
 {
   "planejador": { "almondegas-assadas": 8, "arroz-integral": 6 },
-  "marcados":   { "carne-moida": true },
+  "marcados":   { "carne-moida": 1065 },
   "avulsos":    [ { "id": "a1", "nome": "Papel toalha", "setor": "temperos", "marcado": false } ]
 }
 ```

@@ -145,6 +145,7 @@ button {
 }
 
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
   width: 100%;
@@ -156,8 +157,42 @@ button {
   transition: transform 0.15s;
 }
 
-.card:active {
+.card:has(.card-link:active) {
   transform: scale(0.98);
+}
+
+.card-link {
+  text-decoration: none;
+}
+
+/* O link do nome cobre o card inteiro; o botão redondo fica por cima. */
+.card-link::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+}
+
+.botao-redondo {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  z-index: 1;
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.94);
+  color: var(--cor-acao);
+  box-shadow: 0 2px 6px rgb(0 0 0 / 0.18);
+  cursor: pointer;
+}
+
+.botao-redondo[aria-pressed='true'] {
+  background: var(--cor-acao);
+  color: #fff;
+  animation: pulso 0.25s ease-out;
 }
 
 .card-corpo {
@@ -439,13 +474,350 @@ button {
 .botao {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
+  gap: 8px;
   min-height: 48px;
   padding: 0 20px;
+  border: 2px solid transparent;
   border-radius: 999px;
   background: var(--cor-acao);
   color: #fff;
   font-weight: 600;
   text-decoration: none;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.botao-secundario {
+  background: transparent;
+  border-color: var(--cor-acao);
+  color: var(--cor-acao);
+}
+
+.botao-perigo {
+  background: #b3372b;
+}
+
+/* Verde do WhatsApp só neste botão (seção 9), com texto escuro para dar contraste. */
+.botao-whatsapp {
+  background: #25d366;
+  color: #0b3d20;
+}
+
+.botao:disabled,
+.botao.desabilitado {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+.botao-largo {
+  width: 100%;
+  margin-bottom: 28px;
+}
+
+/* ---------- Contador de porções (RF-12) ---------- */
+
+.contador {
+  display: inline-flex;
+  align-items: center;
+  flex: none;
+  border-radius: 999px;
+  background: var(--cor-superficie);
+  border: 1px solid var(--cor-borda);
+  color: var(--cor-texto);
+}
+
+.contador button {
+  width: 48px;
+  height: 48px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--cor-acao);
+  cursor: pointer;
+}
+
+.contador button:disabled {
+  opacity: 0.3;
+}
+
+.contador-valor {
+  min-width: 2ch;
+  text-align: center;
+  font-family: var(--fonte-titulo);
+  font-size: 1.375rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  animation: pulso 0.2s ease-out;
+}
+
+.no-planejador {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 28px;
+  padding: 8px 8px 8px 16px;
+  border-radius: var(--raio);
+  background: var(--cor-acao);
+  color: #fff;
+  font-weight: 600;
+}
+
+.no-planejador > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Planejador ---------- */
+
+.com-resumo {
+  padding-bottom: 104px;
+}
+
+.planejador {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.linha-plano {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 8px;
+  border-radius: var(--raio);
+  border: 2px solid transparent;
+  background: var(--cor-superficie);
+  transition: border-color 0.15s;
+}
+
+.linha-plano.escolhida {
+  border-color: var(--cor-categoria);
+}
+
+.linha-plano-alvo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 8px 0 8px 12px;
+  border: none;
+  background: none;
+  text-align: left;
+  cursor: pointer;
+}
+
+.linha-plano-icone {
+  flex: none;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border-radius: 10px;
+  background: var(--cor-categoria);
+  color: #fff;
+}
+
+.linha-plano-texto {
+  flex: 1;
+  min-width: 0;
+}
+
+.linha-plano-texto strong {
+  display: block;
+  font-weight: 600;
+  line-height: 1.25;
+}
+
+.linha-plano-texto small {
+  color: var(--cor-texto-suave);
+  font-size: 0.875rem;
+}
+
+.linha-plano-mais {
+  flex: none;
+  color: var(--cor-texto-suave);
+}
+
+.resumo {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: calc(var(--altura-barra) + env(safe-area-inset-bottom));
+  z-index: 15;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  background: var(--cor-fundo);
+  border-top: 1px solid var(--cor-borda);
+  box-shadow: 0 -4px 12px rgb(29 38 32 / 0.06);
+}
+
+.resumo-texto {
+  margin: 0;
+  line-height: 1.3;
+}
+
+.resumo .botao {
+  padding: 0 16px;
+}
+
+.resumo-acoes {
+  display: flex;
+  gap: 8px;
+  margin-left: auto;
+}
+
+/* ---------- Lista de compras ---------- */
+
+.progresso {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 16px 4px;
+  max-width: var(--largura-maxima);
+  margin: 0 auto;
+  color: var(--cor-texto-suave);
+  font-size: 0.9375rem;
+}
+
+.progresso-barra {
+  flex: 1;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--cor-borda);
+  overflow: hidden;
+}
+
+.progresso-barra > div {
+  height: 100%;
+  background: var(--cor-acao);
+  transition: width 0.25s;
+}
+
+.setor + .setor {
+  margin-top: 24px;
+}
+
+.setor-titulo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 1.1875rem;
+}
+
+.setor-contagem {
+  margin-left: auto;
+  font-family: var(--fonte-texto);
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: var(--cor-texto-suave);
+}
+
+.itens {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  background: var(--cor-superficie);
+  border-radius: var(--raio);
+}
+
+.itens li + li {
+  border-top: 1px solid var(--cor-borda);
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 60px;
+  padding: 8px 16px;
+  font-size: 1.0625rem;
+  cursor: pointer;
+}
+
+.caixa {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--cor-texto-suave);
+  border-radius: 8px;
+  color: transparent;
+  transition: background-color 0.15s, border-color 0.15s;
+}
+
+.item input:checked + .caixa {
+  background: var(--cor-acao);
+  border-color: var(--cor-acao);
+  color: #fff;
+  animation: pulso 0.2s ease-out;
+}
+
+.item input:focus-visible + .caixa {
+  outline: 3px solid var(--cor-acao);
+  outline-offset: 2px;
+}
+
+.item-nome {
+  flex: 1;
+}
+
+.item-qtd {
+  flex: none;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.item.marcado .item-nome,
+.item.marcado .item-qtd {
+  text-decoration: line-through;
+  color: var(--cor-texto-suave);
+  font-weight: 400;
+}
+
+/* ---------- Confirmação ---------- */
+
+.confirmacao {
+  width: min(400px, calc(100% - 32px));
+  padding: 24px;
+  border: none;
+  border-radius: 20px;
+  background: var(--cor-superficie);
+  color: var(--cor-texto);
+}
+
+.confirmacao::backdrop {
+  background: rgb(29 38 32 / 0.5);
+}
+
+.confirmacao h2 {
+  font-size: 1.375rem;
+}
+
+.confirmacao-acoes {
+  display: flex;
+  justify-content: flex-end;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+@keyframes pulso {
+  50% {
+    transform: scale(1.15);
+  }
 }
 
 /* ---------- Barra inferior (RF-41) ---------- */
@@ -479,16 +851,37 @@ button {
   color: #fff;
 }
 
-.barra-item[aria-current='page'] svg {
-  background: rgb(255 255 255 / 0.16);
-  border-radius: 999px;
-  padding: 2px 16px;
+.barra-icone {
+  position: relative;
+  display: grid;
+  place-items: center;
   width: 56px;
   height: 28px;
+  border-radius: 999px;
+}
+
+.barra-item[aria-current='page'] .barra-icone {
+  background: rgb(255 255 255 / 0.16);
+}
+
+.selo {
+  position: absolute;
+  top: -6px;
+  left: 34px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #bf5a0d;
+  color: #fff;
+  font-size: 0.75rem;
+  line-height: 20px;
+  text-align: center;
 }
 
 @media (prefers-reduced-motion: reduce) {
   * {
     transition: none !important;
+    animation: none !important;
   }
 }

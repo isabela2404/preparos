@@ -9,6 +9,11 @@ describe('formatarQuantidade (RN-03)', () => {
     expect(formatarQuantidade(12500, 'g')).toBe('12,5 kg');
   });
 
+  it('nunca mostra kg ou L abaixo do necessário', () => {
+    expect(formatarQuantidade(1405, 'g')).toBe('1,41 kg');
+    expect(formatarQuantidade(1001, 'ml')).toBe('1,01 L');
+  });
+
   it('mostra ml abaixo de 1000 e L a partir de 1000', () => {
     expect(formatarQuantidade(250, 'ml')).toBe('250 ml');
     expect(formatarQuantidade(1500, 'ml')).toBe('1,5 L');

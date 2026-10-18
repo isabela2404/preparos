@@ -1,7 +1,9 @@
 import { useLayoutEffect, useState } from 'preact/hooks';
-import { ArrowLeft, Clock, Lightbulb, Snowflake, Users } from 'lucide-preact';
+import { ArrowLeft, ClipboardCheck, Clock, Lightbulb, Plus, Snowflake, Users } from 'lucide-preact';
 import { CapaReceita } from '../componentes/CapaReceita.jsx';
+import { ContadorPorcoes } from '../componentes/ContadorPorcoes.jsx';
 import { TagCategoria } from '../componentes/TagCategoria.jsx';
+import { definirPorcoes } from '../dados/repositorio.js';
 import { SETOR_POR_ID } from '../dominio/setores.js';
 import { formatarQuantidade } from '../dominio/unidades.js';
 import { voltar } from '../rotas.js';
@@ -9,7 +11,7 @@ import { voltar } from '../rotas.js';
 // RF-04: foto, rendimento, tempo, conservação, ingredientes por porção com o
 // setor de cada um e passo a passo numerado. Na cozinha a receita inteira,
 // como foi escrita, é mais fácil de seguir; por isso ela abre primeiro.
-export function DetalheReceita({ receita, ingredientes }) {
+export function DetalheReceita({ receita, ingredientes, porcoes }) {
   const [porPorcao, setPorPorcao] = useState(false);
   useLayoutEffect(() => scrollTo(0, 0), [receita?.id]);
 
@@ -57,6 +59,24 @@ export function DetalheReceita({ receita, ingredientes }) {
             </li>
           )}
         </ul>
+
+        {/* RF-07 */}
+        {porcoes == null ? (
+          <button
+            type="button"
+            class="botao botao-largo"
+            onClick={() => definirPorcoes(receita.id, receita.porcoesPadrao)}
+          >
+            <Plus size={22} aria-hidden="true" /> Adicionar ao planejador
+          </button>
+        ) : (
+          <div class="no-planejador">
+            <span>
+              <ClipboardCheck size={22} aria-hidden="true" /> No planejador
+            </span>
+            <ContadorPorcoes receita={receita} porcoes={porcoes} />
+          </div>
+        )}
 
         <section aria-labelledby="titulo-ingredientes">
           <h2 id="titulo-ingredientes" class="secao-titulo">

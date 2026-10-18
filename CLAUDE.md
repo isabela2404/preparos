@@ -20,8 +20,8 @@ A especificação completa está em [docs/visao-produto-requisitos.md](docs/visa
 
 ## Estrutura e comandos
 
-- `src/dominio/`: regras puras, testadas com Vitest (categorias, setores, unidades RN-03/RN-04, validação da carga contra o catálogo RN-02).
-- `src/dados/repositorio.js`: a camada de dados trocável (RNF-09). As telas só leem por ela. Hoje lê `carga-inicial.json`; na fase 3 passa a usar o Firestore.
+- `src/dominio/`: regras puras, testadas com Vitest (categorias, setores, unidades RN-03/RN-04, validação da carga RN-02, cálculo e agrupamento da lista RN-01 a RN-10).
+- `src/dados/repositorio.js`: a camada de dados trocável (RNF-09). As telas só leem e gravam por ela. Hoje o caderno vem de `carga-inicial.json` e o estado (planejador e marcações) fica no localStorage; cada operação mexe num campo só, como o Firestore fará na fase 3.
 - `src/dados/carga-inicial.json`: a carga inicial do casal (29 receitas, 58 ingredientes). Traz também as listas de categorias e setores, que precisam usar os mesmos códigos de `src/dominio/`, e as `premissas` das conversões. O formato está na seção 8 do documento.
 - `src/telas/`, `src/componentes/`: interface. Nomes de código e textos em português.
 - `npm run dev`, `npm test`, `npm run build`, `npm run preview`.
@@ -36,4 +36,8 @@ O trabalho segue as fases da seção 11 do documento, cada uma com um critério 
 
 ## Próximo passo
 
-A fase 1 está montada e abre offline localmente. Falta publicar e conferir nos dois celulares. Depois vem a fase 2: planejador com contador de porções (RF-10 a RF-15), cálculo da lista (RN-01 a RN-07) e o botão "Adicionar ao planejador" no card e no detalhe (RF-07).
+Fases 1 e 2 prontas; o app está em https://isabela2404.github.io/preparos/ (repositório isabela2404/preparos). A fase 2 só fecha quando a lista conferir com a conta feita à mão. Depois vem a fase 3: Firestore no plano Spark, código do casal (link ou QR code em Ajustes), gravação offline e indicador de estado (RF-30 a RF-34).
+
+## Git
+
+A assinatura deste repositório está no config local (isabela2404 com e-mail noreply do GitHub). Não usar a identidade global da máquina, que tem nome e e-mail de trabalho. O PDF em docs/ fica fora do git porque cita nomes reais.
