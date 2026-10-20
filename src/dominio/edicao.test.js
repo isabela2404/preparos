@@ -56,6 +56,19 @@ describe('ida e volta do formulário', () => {
     expect(receita.ingredientes).toEqual([{ ingrediente: 'azeite', qtdPorPorcao: 6.5 }]); // 2 × 13 ml ÷ 4
   });
 
+  it('grava a fonte só quando preenchida', () => {
+    const { receita: comFonte } = formularioParaReceita(
+      { ...receitaParaFormulario(almondegas), fonte: ' https://exemplo.com/post ' },
+      { original: almondegas, receitas, ingredientes },
+    );
+    expect(comFonte.fonte).toBe('https://exemplo.com/post');
+
+    const form = receitaParaFormulario(comFonte);
+    expect(form.fonte).toBe('https://exemplo.com/post');
+    const { receita } = formularioParaReceita({ ...form, fonte: '' }, { original: comFonte, receitas, ingredientes });
+    expect('fonte' in receita).toBe(false);
+  });
+
   it('explica o que falta preencher', () => {
     const form = {
       ...receitaParaFormulario(null),

@@ -520,6 +520,13 @@ button {
   color: var(--cor-texto-suave);
 }
 
+.detalhe-info a {
+  color: var(--cor-acao);
+  font-weight: 600;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+}
+
 .alternador {
   display: inline-flex;
   margin-bottom: 12px;
@@ -1551,6 +1558,16 @@ label.botao:focus-within {
 .editor-porcao {
   color: var(--cor-texto-suave);
   font-size: 0.875rem;
+}
+
+/* Ingrediente que entra no catálogo ao salvar. */
+.editor-novo {
+  flex: none;
+  padding: 2px 8px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 999px;
+  color: var(--cor-texto-suave);
+  font-size: 0.8125rem;
 }
 
 .mensagem ul {

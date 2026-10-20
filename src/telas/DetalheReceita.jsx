@@ -1,5 +1,17 @@
 import { useState } from 'preact/hooks';
-import { ArrowLeft, ChefHat, ClipboardCheck, Clock, Lightbulb, Pencil, Plus, Snowflake, Users } from 'lucide-preact';
+import {
+  ArrowLeft,
+  BookOpen,
+  ChefHat,
+  ClipboardCheck,
+  Clock,
+  ExternalLink,
+  Lightbulb,
+  Pencil,
+  Plus,
+  Snowflake,
+  Users,
+} from 'lucide-preact';
 import { CapaReceita } from '../componentes/CapaReceita.jsx';
 import { Contador, ContadorPorcoes } from '../componentes/ContadorPorcoes.jsx';
 import { TagCategoria } from '../componentes/TagCategoria.jsx';
@@ -62,6 +74,11 @@ export function DetalheReceita({ receita, ingredientes, porcoes }) {
             <li>
               <Snowflake size={20} aria-hidden="true" />
               <span>{conservacao.map(([local, prazo]) => `${local}: ${prazo}`).join(' · ')}</span>
+            </li>
+          )}
+          {receita.fonte && (
+            <li>
+              <Fonte fonte={receita.fonte} />
             </li>
           )}
         </ul>
@@ -164,5 +181,31 @@ export function DetalheReceita({ receita, ingredientes, porcoes }) {
         )}
       </div>
     </main>
+  );
+}
+
+/** Link do post original; texto simples quando a fonte não é um endereço ("Livro da vó"). */
+function Fonte({ fonte }) {
+  if (!/^https?:\/\//i.test(fonte)) {
+    return (
+      <>
+        <BookOpen size={20} aria-hidden="true" />
+        <span>Fonte: {fonte}</span>
+      </>
+    );
+  }
+  let site = fonte;
+  try {
+    site = new URL(fonte).hostname.replace(/^www\./, '');
+  } catch {
+    // Endereço malformado: mostra como veio.
+  }
+  return (
+    <>
+      <ExternalLink size={20} aria-hidden="true" />
+      <a href={fonte} target="_blank" rel="noopener noreferrer">
+        Receita original em {site}
+      </a>
+    </>
   );
 }

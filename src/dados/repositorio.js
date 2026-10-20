@@ -25,7 +25,8 @@ import { aplicarMudancas, extrairCodigo, gerarCodigo } from './mudancas.js';
  *   conservacao: Record<string, string>,  // local → prazo, ex.: { Geladeira: '4 dias' }
  *   ingredientes: ItemReceita[],          // quantidades por porção, para a lista
  *   ingredientesTexto: string[],          // a receita inteira como foi escrita
- *   passos: string[], vira: string
+ *   passos: string[], vira: string,
+ *   fonte?: string                      // link do post ou de onde veio a receita
  * }} Receita
  * @typedef {{
  *   versao: number,

@@ -251,7 +251,7 @@ Todos os dados moram no banco, dentro do espaço do casal: o catálogo de ingred
 }
 ```
 
-**Receita (`coleção receitas`)** – `ingredientes` traz as quantidades por **uma** porção, na unidade base, para calcular a lista. Itens sem quantidade na receita original ficam com `aGosto: true` e `qtdPorPorcao: null`. `ingredientesTexto` guarda a receita inteira como foi escrita, para consulta na cozinha.
+**Receita (`coleção receitas`)** – `ingredientes` traz as quantidades por **uma** porção, na unidade base, para calcular a lista. Itens sem quantidade na receita original ficam com `aGosto: true` e `qtdPorPorcao: null`. `ingredientesTexto` guarda a receita inteira como foi escrita, para consulta na cozinha. `fonte`, opcional, guarda o link do post ou de onde veio a receita; o detalhe mostra como link.
 
 ```json
 {

@@ -66,6 +66,7 @@ export function receitaParaFormulario(receita) {
       passos: '',
       conservacao: '',
       vira: '',
+      fonte: '',
       itens: [],
     };
   }
@@ -81,6 +82,7 @@ export function receitaParaFormulario(receita) {
       .map(([local, prazo]) => `${local}: ${prazo}`)
       .join('\n'),
     vira: receita.vira ?? '',
+    fonte: receita.fonte ?? '',
     itens: receita.ingredientes.map((i) => ({
       chave: novaChave(),
       ingrediente: i.ingrediente,
@@ -151,5 +153,9 @@ export function formularioParaReceita(form, { original, receitas, ingredientes }
     passos: linhas(form.passos),
     vira: form.vira.trim(),
   };
+  // Opcional: link do post ou de onde veio a receita. Sem ela, o campo não é gravado.
+  const fonte = form.fonte.trim();
+  if (fonte) receita.fonte = fonte;
+  else delete receita.fonte;
   return { receita, erros };
 }

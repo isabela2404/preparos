@@ -20,7 +20,7 @@ A especificação completa está em [docs/visao-produto-requisitos.md](docs/visa
 
 ## Estrutura e comandos
 
-- `src/dominio/`: regras puras, testadas com Vitest (categorias, setores, unidades RN-03/RN-04, validação da carga RN-02, cálculo e agrupamento da lista RN-01 a RN-10).
+- `src/dominio/`: regras puras, testadas com Vitest (categorias, setores, unidades RN-03/RN-04, validação da carga RN-02, cálculo e agrupamento da lista RN-01 a RN-10, receita com IA em `ia.js`).
 - `src/dados/repositorio.js`: a camada de dados trocável (RNF-09). As telas só leem (`useRepositorio`) e gravam por ela. Sem código do casal, tudo fica no aparelho (carga empacotada + localStorage). Com código, `src/dados/firestore.js` é carregado por import dinâmico e passa a ser a fonte; o localStorage guarda uma cópia para abrir na hora.
 - Cada operação vira uma lista de mudanças de campo (`src/dados/mudancas.js`), aplicada na hora no aparelho e enviada ao Firestore com `updateDoc` só nos campos tocados.
 - Banco: `casais/{codigo}` com `planejador`, `marcados`, `avulsos` (mapa), `versaoCarga` e, depois de uma troca de código, `substituido: true` (o espaço antigo fica vazio); subcoleções `receitas` (com `ordem`), `ingredientes` e `fotos`. A carga não é mais regravada depois da criação, para não apagar o que foi editado pela tela. Regras em `firestore.rules`, testadas com `npm run test:regras` (emulador, Java 21).
@@ -43,7 +43,9 @@ O trabalho segue as fases da seção 11 do documento, cada uma com um critério 
 
 As fases 1, 2 e 3 do roadmap estão prontas e validadas nos dois celulares (18/10/2026). O app está em https://isabela2404.github.io/preparos/ (repositório isabela2404/preparos), sincronizando pelo Firestore.
 
-Da etapa "Depois" já entraram: cadastro de receitas e ingredientes pela tela, busca (RF-03), porções no detalhe e no modo cozinha (RF-05), modo cozinha (RF-06), itens avulsos com grupo Outros (RF-27), origem de cada item (RF-28) e troca do código do casal e fotos das receitas enviadas pelo app.
+Da etapa "Depois" já entraram: cadastro de receitas e ingredientes pela tela, busca (RF-03), porções no detalhe e no modo cozinha (RF-05), modo cozinha (RF-06), itens avulsos com grupo Outros (RF-27), origem de cada item (RF-28) troca do código do casal, fotos das receitas enviadas pelo app, campo Fonte (link do post original) e receita com IA.
+
+Receita com IA (19/10/2026): o app não chama nenhuma IA. Em Nova receita, "Receita com IA" copia instruções geradas com o catálogo atual (`instrucoesParaIa`); a pessoa cola no Claude ou no Gemini com o link, os prints ou o vídeo e traz de volta o JSON, que `lerRespostaDaIa` transforma no formulário para conferir. A IA copia as quantidades da receita inteira na medida original; a conversão e a divisão por porção ficam no app. Ingredientes fora do catálogo entram como novos ao salvar.
 
 Decidido não fazer por enquanto (18/10/2026): restringir a chave do Firebase ao domínio do Pages. Os dados já ficam protegidos pelas regras e pelo código do casal; o pior caso de abuso é a cota gratuita acabar e a sincronização parar até o dia seguinte, sem custo. Retomar só se isso acontecer.
 

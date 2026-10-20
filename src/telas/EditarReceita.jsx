@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from 'preact/hooks';
-import { Camera, Plus, Trash2, X } from 'lucide-preact';
+import { Camera, Plus, Sparkles, Trash2, X } from 'lucide-preact';
 import { CapaReceita, useFoto } from '../componentes/CapaReceita.jsx';
 import { Confirmacao } from '../componentes/Confirmacao.jsx';
+import { ReceitaComIa } from '../componentes/ReceitaComIa.jsx';
 import { SeletorIngrediente } from '../componentes/SeletorIngrediente.jsx';
 import { apagarReceita, removerFoto, salvarFoto, salvarReceita } from '../dados/repositorio.js';
 import { reduzirImagem } from '../dados/imagem.js';
@@ -24,6 +25,9 @@ export function EditarReceita({ receita, caderno, podeEditar }) {
   const [erros, setErros] = useState([]);
   const [escolhendo, setEscolhendo] = useState(null);
   const [apagando, setApagando] = useState(false);
+  const [comIa, setComIa] = useState(false);
+  // O que conferir depois que a IA preencheu o formulário.
+  const [avisos, setAvisos] = useState(null);
   // Foto: { blob, url } escolhida agora, ou 'remover'; null mantém a atual.
   const [foto, setFoto] = useState(null);
   const [estadoFoto, setEstadoFoto] = useState(null);
@@ -99,7 +103,26 @@ export function EditarReceita({ receita, caderno, podeEditar }) {
         </div>
       )}
 
+      {avisos && (
+        <div class="mensagem" role="status">
+          <strong>Receita preenchida pela IA. Confira tudo antes de salvar.</strong>
+          {avisos.length > 0 && (
+            <ul>
+              {avisos.map((aviso) => (
+                <li key={aviso}>{aviso}</li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
       <form onSubmit={salvar} novalidate>
+        {!receita && (
+          <button type="button" class="botao botao-secundario" onClick={() => setComIa(true)}>
+            <Sparkles size={20} aria-hidden="true" /> Receita com IA
+          </button>
+        )}
+
         <label class="campo">
           <span>Nome</span>
           <input type="text" {...campo('nome')} />
@@ -205,6 +228,7 @@ export function EditarReceita({ receita, caderno, podeEditar }) {
                     <button type="button" class="editor-ingrediente" onClick={() => setEscolhendo(item.chave)}>
                       {ing?.nome ?? 'Escolher ingrediente'}
                     </button>
+                    {ing && !caderno.ingredientes[item.ingrediente] && <small class="editor-novo">novo</small>}
                     <button
                       type="button"
                       class="item-remover"
@@ -290,6 +314,12 @@ export function EditarReceita({ receita, caderno, podeEditar }) {
           <textarea rows="2" {...campo('vira')} />
         </label>
 
+        <label class="campo">
+          <span>Fonte</span>
+          <small>Link do post ou de onde veio a receita.</small>
+          <input type="text" inputmode="url" autocapitalize="off" placeholder="https://" {...campo('fonte')} />
+        </label>
+
         <button type="submit" class="botao botao-largo">
           Salvar receita
         </button>
@@ -313,6 +343,20 @@ export function EditarReceita({ receita, caderno, podeEditar }) {
           if (ingrediente) setNovos((atuais) => ({ ...atuais, [codigo]: ingrediente }));
           mudarItem(escolhendo, { ingrediente: codigo, medida: 'base' });
           setEscolhendo(null);
+        }}
+      />
+
+      <ReceitaComIa
+        aberto={comIa}
+        ingredientes={caderno.ingredientes}
+        aoFechar={() => setComIa(false)}
+        aoPreencher={(lida) => {
+          setForm(lida.form);
+          setNovos(lida.novos);
+          setAvisos(lida.avisos);
+          setErros([]);
+          setComIa(false);
+          topo.current?.scrollIntoView({ behavior: 'smooth' });
         }}
       />
 
