@@ -24,7 +24,6 @@ export function App() {
   const [categoriaCaderno, setCategoriaCaderno] = useState(null);
   const [categoriaPlanejador, setCategoriaPlanejador] = useState(null);
   const [buscaCaderno, setBuscaCaderno] = useState('');
-  const [buscaPlanejador, setBuscaPlanejador] = useState('');
 
   const caderno = dados?.caderno;
   const estado = dados?.estado;
@@ -96,8 +95,6 @@ export function App() {
           status={status}
           categoria={categoriaPlanejador}
           aoMudarCategoria={setCategoriaPlanejador}
-          busca={buscaPlanejador}
-          aoMudarBusca={setBuscaPlanejador}
         />
       );
       break;

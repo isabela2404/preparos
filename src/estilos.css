@@ -790,13 +790,8 @@ button {
   gap: 8px;
   padding-right: 8px;
   border-radius: var(--raio);
-  border: 2px solid transparent;
+  border: 2px solid var(--cor-categoria);
   background: var(--cor-superficie);
-  transition: border-color 0.15s;
-}
-
-.linha-plano.escolhida {
-  border-color: var(--cor-categoria);
 }
 
 .linha-plano-alvo {
@@ -807,10 +802,8 @@ button {
   gap: 12px;
   min-height: 64px;
   padding: 8px 0 8px 12px;
-  border: none;
-  background: none;
-  text-align: left;
-  cursor: pointer;
+  color: var(--cor-texto);
+  text-decoration: none;
 }
 
 .linha-plano-icone {
@@ -850,11 +843,6 @@ button {
   font-size: 0.875rem;
 }
 
-.linha-plano-mais {
-  flex: none;
-  color: var(--cor-texto-suave);
-}
-
 .resumo {
   position: fixed;
   left: 0;
@@ -874,6 +862,12 @@ button {
 .resumo-texto {
   margin: 0;
   line-height: 1.3;
+}
+
+.resumo-filtro {
+  display: block;
+  color: var(--cor-texto-suave);
+  font-size: 0.8125rem;
 }
 
 .resumo .botao {

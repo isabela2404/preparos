@@ -72,10 +72,11 @@ export function Lista({ grupos, status }) {
         {!total && (
           <div class="lista-vazia">
             <p>
-              A lista sai das receitas escolhidas no Planejador. Também dá para anotar aqui o que não vem de receita.
+              A lista sai das receitas do Planejador, escolhidas no Caderno. Também dá para anotar aqui o que não vem de
+              receita.
             </p>
-            <a class="botao botao-secundario" href="#/planejador">
-              Ir para o Planejador
+            <a class="botao botao-secundario" href="#/">
+              Ir para o Caderno
             </a>
           </div>
         )}

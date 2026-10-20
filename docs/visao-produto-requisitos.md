@@ -81,10 +81,10 @@ Cada requisito tem um código (RF) para facilitar a conversa e os testes. Priori
 
 | Código | Requisito | Prior. |
 | --- | --- | --- |
-| RF-10 | Mostrar as receitas disponíveis para seleção, com os mesmos filtros de categoria. | M |
-| RF-11 | Selecionar e desselecionar uma receita com um toque. | M |
+| RF-10 | Mostrar só as receitas escolhidas, na ordem das categorias, com filtro só pelas categorias que têm receita escolhida; tocar numa delas abre o detalhe. A escolha é feita no Caderno (RF-07). | M |
+| RF-11 | Selecionar e desselecionar uma receita com um toque, pelo botão do card no Caderno. No Planejador, tirar a última porção tira a receita (RN-06). | M |
 | RF-12 | Cada receita selecionada exibe um contador numérico com + e − para as porções desejadas (mínimo 1, valor inicial = rendimento padrão da receita). | M |
-| RF-13 | Exibir um resumo fixo no rodapé: quantas receitas e quantas porções no total. | M |
+| RF-13 | Exibir um resumo fixo no rodapé: quantas receitas e quantas porções no total, ou na categoria filtrada. | M |
 | RF-14 | Botão "Zerar planejador" com confirmação antes de apagar. | M |
 | RF-15 | A lista de compras se recalcula sozinha sempre que o planejador muda; não há botão para gerá-la. | M |
 

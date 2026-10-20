@@ -1,8 +1,12 @@
 import { CATEGORIAS } from '../dominio/categorias.js';
 
 // RF-02: uma categoria por vez ou "Todas". `selecionada` null significa Todas.
-export function ChipsCategoria({ selecionada, aoSelecionar }) {
-  const opcoes = [{ id: null, nome: 'Todas', cor: 'var(--cor-acao)' }, ...CATEGORIAS];
+// `disponiveis` (Set de códigos), quando vem, limita os botões a essas categorias.
+export function ChipsCategoria({ selecionada, aoSelecionar, disponiveis = null }) {
+  const opcoes = [
+    { id: null, nome: 'Todas', cor: 'var(--cor-acao)' },
+    ...CATEGORIAS.filter((c) => !disponiveis || disponiveis.has(c.id)),
+  ];
   return (
     <div class="chips" role="radiogroup" aria-label="Filtrar por categoria">
       {opcoes.map((c) => (
