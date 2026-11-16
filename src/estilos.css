@@ -419,7 +419,11 @@ button {
   aspect-ratio: 4 / 3;
   width: 100%;
   display: grid;
+  /* A faixa da grade fica do tamanho da capa, e não da foto: sem isso, com a
+     altura limitada (detalhe no desktop), a foto transborda sobre o título. */
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   place-items: center;
+  overflow: hidden;
   background: var(--cor-categoria, var(--cor-acao));
   color: #fff;
 }
